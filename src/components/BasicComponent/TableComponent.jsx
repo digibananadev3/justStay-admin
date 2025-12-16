@@ -165,7 +165,7 @@ const TableComponent = ({
 
               {/* Next */}
               <button
-                disabled={currentPage === pageSize}
+                disabled={currentPage === Math.ceil(totalItems/pageSize)}
                 onClick={() => onPageChange(currentPage + 1)}
                 className="px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600
                      hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-transparent 

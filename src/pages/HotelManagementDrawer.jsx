@@ -19,7 +19,7 @@ export const useProperty = () => {
   return context;
 };
 
-const HotelManagementDrawer = ({ isOpen, setIsOpen, propertyId }) => {
+const HotelManagementDrawer = ({ isOpen, setIsOpen, propertyId, openEdit }) => {
   const handleClose = () => setIsOpen(false);
 
   // Fetch property details when drawer is open and propertyId is available
@@ -76,6 +76,7 @@ const HotelManagementDrawer = ({ isOpen, setIsOpen, propertyId }) => {
         <DrawerTitleComponent
           title={`Hotel Profile - ${propertyName}`}
           subTitle={"Complete hotel information and activity"}
+          openEdit={openEdit}
         />
         {!propertyId ? (
           <div className="p-5 text-gray-500">

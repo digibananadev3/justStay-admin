@@ -17,7 +17,11 @@ import { BsThreeDots } from "react-icons/bs";
 import HotelManagementDrawer from "./HotelManagementDrawer";
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProperties, fetchPropertiesStats, exportProperties } from "../services/properties";
+import {
+  fetchProperties,
+  fetchPropertiesStats,
+  exportProperties,
+} from "../services/properties";
 import Loader from "../components/BasicComponent/Loader";
 import EditHotelDrawer from "./EditHotelDrawer";
 
@@ -25,7 +29,7 @@ const HotalManagement = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPropertyId, setSelectedPropertyId] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
-const [editPropertyId, setEditPropertyId] = useState(null);
+  const [editPropertyId, setEditPropertyId] = useState(null);
 
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
@@ -51,13 +55,14 @@ const [editPropertyId, setEditPropertyId] = useState(null);
 
   const currentPage = pagination.page || page;
   const pageSize = pagination.limit || limit;
-  const totalItems = pagination.total * pagination.totalPages || 0;
+  const totalItems = pagination.total || 0;
 
   // Fetch properties stats from API
   const { data: statsData, isLoading: statsLoading } = useQuery({
     queryKey: ["propertiesStats"],
     queryFn: fetchPropertiesStats,
   });
+
 
   // Handle search input
   const handleSearch = useCallback((value) => {
@@ -67,31 +72,30 @@ const [editPropertyId, setEditPropertyId] = useState(null);
   }, []);
 
   const handleExport = async () => {
-  try {
-    const response = await exportProperties(searchQuery, statusFilter);
-    console.log("This is the responsive of the handleExport", response);
+    try {
+      const response = await exportProperties(searchQuery, statusFilter);
+      console.log("This is the responsive of the handleExport", response);
 
-    const blob = new Blob([response.data], {
-      type: "text/csv;charset=utf-8;",
-    });
+      const blob = new Blob([response.data], {
+        type: "text/csv;charset=utf-8;",
+      });
 
-    const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(blob);
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "hotel_properties_export.csv";
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "hotel_properties_export.csv";
 
-    document.body.appendChild(link);
-    link.click();
+      document.body.appendChild(link);
+      link.click();
 
-    link.remove();
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error("Export error:", error);
-    alert("Failed to export properties");
-  }
-};
-
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Export error:", error);
+      alert("Failed to export properties");
+    }
+  };
 
   // Transform API response to match table structure
   const transformPropertiesData = (properties) => {
@@ -379,18 +383,21 @@ const [editPropertyId, setEditPropertyId] = useState(null);
             className="hover:text-blue-600 cursor-pointer"
             aria-label="View"
             onClick={(e) => {
-              setIsOpen(!isOpen)
+              setEditPropertyId(row?._id);
+              setIsOpen(!isOpen);
             }}
           >
+            {console.log("This is the value of the value", value)}
+            {console.log("This is the value of the row", row)}
             <LuEye size={16} />
           </button>
           <button
             className="hover:text-blue-600 cursor-pointer"
             aria-label="Edit"
-            onClick={(e) => { 
+            onClick={(e) => {
               e.stopPropagation();
-                setEditPropertyId(row?._id);
-    setIsEditOpen(true);
+              setEditPropertyId(row?._id);
+              setIsEditOpen(true);
             }}
           >
             <FaRegEdit size={16} />
@@ -431,7 +438,8 @@ const [editPropertyId, setEditPropertyId] = useState(null);
           subTitle={"Manage all hotel properties and listings"}
         />
       </div>
-      {console.log("This is the value of the propertiesData ", propertiesData)}
+      {console.log("This is the value of the stats ", statsData)}
+      {console.log("This is the data of the HotalManagement", data)}
       <div className="flex gap-4 pt-8">
         {hotelCards.map((item) => (
           <CardComponent
@@ -480,14 +488,17 @@ const [editPropertyId, setEditPropertyId] = useState(null);
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           propertyId={selectedPropertyId}
+          openEdit={()=>{
+            setIsEditOpen(true)
+          }}
         />
 
         <EditHotelDrawer
-  isOpen={isEditOpen}
-  setIsOpen={setIsEditOpen}
-  propertyId={editPropertyId}
-/>
-
+          key={editPropertyId}
+          isOpen={isEditOpen}
+          setIsOpen={setIsEditOpen}
+          propertyId={editPropertyId}
+        />
       </div>
     </>
   );

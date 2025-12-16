@@ -3,7 +3,7 @@ import SearchComponent from "../BasicComponent/SearchComponent"
 import SelectComponent from "../BasicComponent/SelectComponent"
 
 const HotelFilters = ({ handleSearch, status, onStatusChange, onExport }) => {
-  const STATUS_OPTIONS = ["Under Review", "Rejected", "Active"];
+  const STATUS_OPTIONS = ["Under Review", "Rejected", "Accepted"];
   return(
     <div className="grid grid-cols-8 gap-4 items-center">
       <div className="col-span-4">
