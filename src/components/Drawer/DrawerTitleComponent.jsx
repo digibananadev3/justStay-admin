@@ -11,7 +11,7 @@ const DrawerTitleComponent = ({
           <p className="font-poppins font-normal text-[14px] leading-5 tracking-[0px]">{subTitle}</p>
         </div>
         <div>
-          <button onClick={openEdit}>Edit</button>
+          <button className="cursor-pointer" onClick={openEdit}>Edit</button>
         </div>
       </div>
     </>

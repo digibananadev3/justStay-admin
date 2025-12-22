@@ -50,6 +50,21 @@ export const updateProperty = async (propertyId, payload) => {
   return data;
 };
 
+
+
+export const deleteProperty = async (propertyId) => {
+  if (!propertyId) {
+    throw new Error("Property ID is required");
+  }
+
+  const { data } = await apiClient.delete(
+    `${PROPERTIES_LIST}/${propertyId}`
+  );
+
+  return data;
+};
+
+
 export const fetchPropertyById = async (propertyId) => {
   const { data } = await apiClient.get(`${PROPERTIES_LIST}/${propertyId}`);
   return data;

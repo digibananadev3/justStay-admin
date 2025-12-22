@@ -70,6 +70,7 @@ const HotelProfile = () => {
           />
         </Container>
       </div>
+      {console.log("This is the value of the property in the HotelProfile component", property)}
       <div>
         <Container title={"Amenities Management"}>
           <AmenitiesManagement 

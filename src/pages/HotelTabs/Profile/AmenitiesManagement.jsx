@@ -19,7 +19,9 @@ const AmenitiesManagement = ({ amenities, certification }) => {
     { label: 'Room Service', icon: LuBellRing },
   ];
 
-  const list = amenities?.length ? amenities : defaultAmenities;
+const list = amenities?.length
+  ? amenities.map(a => ({ label: a, icon: LuShieldCheck }))
+  : defaultAmenities;
   const certify = {
     title: 'goSafe Certified',
     description: 'Sanitization protocols, staff training, and safety measures verified',
@@ -28,6 +30,7 @@ const AmenitiesManagement = ({ amenities, certification }) => {
 
   return (
     <div className="space-y-5">
+      {console.log("This is the value of the amenities in the Amenities Management component", amenities)}
       <div className="flex flex-wrap gap-2">
         {list.map((am, idx) => (
           <AmenityChip key={idx} icon={am.icon || LuShieldCheck} label={am.label} />

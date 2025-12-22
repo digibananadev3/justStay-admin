@@ -15,7 +15,7 @@ import TableComponent from "../components/BasicComponent/TableComponent";
 import { FaRegEdit } from "react-icons/fa";
 import { BsThreeDots } from "react-icons/bs";
 import HotelManagementDrawer from "./HotelManagementDrawer";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   fetchProperties,
@@ -24,17 +24,54 @@ import {
 } from "../services/properties";
 import Loader from "../components/BasicComponent/Loader";
 import EditHotelDrawer from "./EditHotelDrawer";
+// import { AiTwotoneDelete } from "react-icons/ai";
+import { MdDelete } from "react-icons/md";
+import { createPortal } from "react-dom";
 
 const HotalManagement = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPropertyId, setSelectedPropertyId] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editPropertyId, setEditPropertyId] = useState(null);
+const [menu, setMenu] = useState({
+  id: null,
+  rect: null,
+});
+const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+const [deletePropertyId, setDeletePropertyId] = useState(null);
+
+
+
 
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+
+
+
+useEffect(() => {
+  const close = () => setMenu({ id: null, rect: null });
+  window.addEventListener("click", close);
+  return () => window.removeEventListener("click", close);
+}, []);
+
+
+useEffect(() => {
+  const handleEsc = (e) => {
+    if (e.key === "Escape") {
+      setDeleteModalOpen(false);
+    }
+  };
+  window.addEventListener("keydown", handleEsc);
+  return () => window.removeEventListener("keydown", handleEsc);
+}, []);
+
+
+
+
+
+
 
   // Fetch properties from API with search
   const {
@@ -74,7 +111,7 @@ const HotalManagement = () => {
   const handleExport = async () => {
     try {
       const response = await exportProperties(searchQuery, statusFilter);
-      console.log("This is the responsive of the handleExport", response);
+      // console.log("This is the responsive of the handleExport", response);
 
       const blob = new Blob([response.data], {
         type: "text/csv;charset=utf-8;",
@@ -387,8 +424,6 @@ const HotalManagement = () => {
               setIsOpen(!isOpen);
             }}
           >
-            {console.log("This is the value of the value", value)}
-            {console.log("This is the value of the row", row)}
             <LuEye size={16} />
           </button>
           <button
@@ -402,13 +437,53 @@ const HotalManagement = () => {
           >
             <FaRegEdit size={16} />
           </button>
-          <button
-            className="hover:text-blue-600"
-            aria-label="More"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <BsThreeDots size={16} />
-          </button>
+<button
+  className="h-8 w-8 rounded-lg hover:bg-gray-100 transition grid place-items-center cursor-pointer"
+  onClick={(e) => {
+    e.stopPropagation();
+
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    setMenu({
+      id: row._id,
+      rect,
+    });
+  }}
+>
+  <BsThreeDots size={16} />
+</button>
+
+          {/* Dropdown menu */}
+          {menu.id &&
+  createPortal(
+    <div
+      className="absolute z-[9999] w-44 rounded-xl border border-gray-200 bg-white
+                 shadow-[0_8px_24px_rgba(0,0,0,0.08)] cursor-pointer"
+      style={{
+        top: menu.rect.bottom + window.scrollY + 6,
+        left: menu.rect.left + window.scrollX - 140,
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm
+                   text-red-600 hover:bg-red-50 transition"
+ onClick={() => {
+  setMenu({ id: null, rect: null });
+  setDeletePropertyId(menu.id);
+  setDeleteModalOpen(true);
+}}
+
+      >
+        <MdDelete className="text-lg text-gray-600 cursor-pointer"/>
+        <span className="font-poppins font-medium text-gray-600">Delete Hotel</span>
+      </button>
+    </div>,
+    document.body
+  )}
+
+
+
         </div>
       ),
     },
@@ -438,8 +513,6 @@ const HotalManagement = () => {
           subTitle={"Manage all hotel properties and listings"}
         />
       </div>
-      {console.log("This is the value of the stats ", statsData)}
-      {console.log("This is the data of the HotalManagement", data)}
       <div className="flex gap-4 pt-8">
         {hotelCards.map((item) => (
           <CardComponent
@@ -499,6 +572,57 @@ const HotalManagement = () => {
           setIsOpen={setIsEditOpen}
           propertyId={editPropertyId}
         />
+
+
+        {deleteModalOpen &&
+  createPortal(
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40">
+      <div
+        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="text-lg font-semibold text-gray-800">
+          Delete Property
+        </h3>
+
+        <p className="mt-2 text-sm text-gray-600">
+          Are you sure you want to delete this property?  
+          This action <span className="font-semibold text-red-600">cannot be undone</span>.
+        </p>
+
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm
+                       hover:bg-gray-100 transition"
+            onClick={() => {
+              setDeleteModalOpen(false);
+              setDeletePropertyId(null);
+            }}
+          >
+            Cancel
+          </button>
+
+          <button
+            className="rounded-lg bg-red-600 px-4 py-2 text-sm text-white
+                       hover:bg-red-700 transition"
+            onClick={() => {
+              console.log("Confirmed delete:", deletePropertyId);
+
+              // 👉 CALL DELETE API HERE
+              // await deleteProperty(deletePropertyId)
+
+              setDeleteModalOpen(false);
+              setDeletePropertyId(null);
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  )}
+
       </div>
     </>
   );
