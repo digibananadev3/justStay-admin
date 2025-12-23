@@ -29,7 +29,7 @@ export default function Dropdown({
       {/* Dropdown Button */}
       <button
         onClick={toggleDropdown}
-        className="inline-flex w-full items-center justify-between rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none"
+        className="inline-flex w-full min-w-28 items-center justify-between rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none"
       >
         {selected || placeholder}
         <FiChevronDown
@@ -50,7 +50,7 @@ export default function Dropdown({
                   onSelect(option);
                   setIsOpen(false);
                 }}
-                className={`block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 ${
+                className={`block w-full  px-4 py-2 text-left text-sm hover:bg-gray-100 ${
                   option === selected
                     ? "bg-gray-100 text-gray-900 font-medium"
                     : "text-gray-700"

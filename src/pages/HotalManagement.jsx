@@ -531,10 +531,10 @@ useEffect(() => {
       <div className="p-6 my-6 border border-gray-200 rounded-2xl">
         <HotelFilters
           handleSearch={handleSearch}
-          status={statusFilter}
+          status={statusFilter || "All"}
           onExport={handleExport}
           onStatusChange={(value) => {
-            setStatusFilter(value);
+            setStatusFilter(value === "All"?"":value);
             setPage(1);
           }}
         />
