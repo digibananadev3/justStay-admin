@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const AUTH_BASE_URL = "http://13.203.230.175:4000";
+// const AUTH_BASE_URL = "http://13.203.230.175:4000";
+const AUTH_BASE_URL = "https://qwiz15.in";
 const AUTH_LOGIN = "/api/auth/login";
 const AUTH_VERIFY_OTP = "/api/auth/verify-otp";
 

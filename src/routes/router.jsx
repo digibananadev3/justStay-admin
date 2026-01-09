@@ -15,6 +15,8 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Login from "../pages/Login";
 import ProtectedRoute from "../components/ProtectedRoute";
 import PublicRoute from "../components/PublicRoute";
+import MasterManagementLayout from "../layouts/MasterManagementLayout";
+import AmenitiesManagementLayout from "../layouts/AmenitiesManagementLayout";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +46,14 @@ const router = createBrowserRouter([
       {
         path: "/hotel-management",
         element: <HotalManagementLayout />
+      },
+      {
+        path: "/master-management",
+        element: <AmenitiesManagementLayout />
+      },
+            {
+        path: "/master-management/amenities",
+        element: <AmenitiesManagementLayout />
       },
       {
         path: "/verification",

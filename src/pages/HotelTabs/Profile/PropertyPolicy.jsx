@@ -4,42 +4,58 @@ const Pill = ({ yes }) => (
   </span>
 );
 
-const PropertyPolicy = ({ policy }) => {
-  const data = {
-    checkIn: "14:00",
-    checkOut: "11:00",
-    cancellation: "Free cancellation up to 24 hours before check-in",
-    coupleFriendly: true,
-    petFriendly: false,
-    ...policy,
-  };
+const PropertyPolicy = ({ policy = {} }) => {
+  // const data = {
+  //   checkIn: "14:00",
+  //   checkOut: "11:00",
+  //   cancellation: "Free cancellation up to 24 hours before check-in",
+  //   coupleFriendly: true,
+  //   petFriendly: false,
+  //   ...policy,
+  // };
+
+
+    const {
+    checkIn,
+    checkOut,
+    cancellation,
+    coupleFriendly,
+    petFriendly,
+    goSafeBadge,
+    trainingAndGuidelines,
+    verificationNotes,
+  } = policy;
 
   return (
     <div className="space-y-6">
+      {console.log("This is the value of the policy in the Property Policy Component", policy)}
       <div className="grid grid-cols-2 gap-x-10">
         <div>
           <p className="text-[#4A5565] text-[12px] leading-4 tracking-[0px] mb-1">Check-in Time</p>
-          <p className="text-[#101828] font-semibold text-[14px] leading-5 tracking-[0px]">{data.checkIn}</p>
+          {/* <p className="text-[#101828] font-semibold text-[14px] leading-5 tracking-[0px]">{data.checkIn}</p> */}
+                    <p className="text-[#101828] font-semibold text-[14px] leading-5 tracking-[0px]">{checkIn?checkIn:"N/A"}</p>
         </div>
         <div>
           <p className="text-[#4A5565] text-[12px] leading-4 tracking-[0px] mb-1">Check-out Time</p>
-          <p className="text-[#101828] font-semibold text-[14px] leading-5 tracking-[0px]">{data.checkOut}</p>
+          {/* <p className="text-[#101828] font-semibold text-[14px] leading-5 tracking-[0px]">{data.checkOut}</p> */}
+                   <p className="text-[#101828] font-semibold text-[14px] leading-5 tracking-[0px]">{checkOut?checkOut:"N/A"}</p>
         </div>
       </div>
 
       <div>
         <p className="text-[#4A5565] text-[12px] leading-4 tracking-[0px] mb-1">Cancellation Policy</p>
-        <p className="text-[#101828] font-semibold text-[14px] leading-5 tracking-[0px]">{data.cancellation}</p>
+        {/* <p className="text-[#101828] font-semibold text-[14px] leading-5 tracking-[0px]">{data.cancellation}</p> */}
+                <p className="text-[#101828] font-semibold text-[14px] leading-5 tracking-[0px]">{cancellation?cancellation:"N/A"}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-x-10">
         <div>
           <p className="text-[#4A5565] text-[12px] leading-4 tracking-[0px] mb-2">Couple Friendly</p>
-          <Pill yes={data.coupleFriendly} />
+          <Pill yes={coupleFriendly?coupleFriendly:""} />
         </div>
         <div>
           <p className="text-[#4A5565] text-[12px] leading-4 tracking-[0px] mb-2">Pet Friendly</p>
-          <Pill yes={data.petFriendly} />
+          <Pill yes={petFriendly?petFriendly:""} />
         </div>
       </div>
     </div>
