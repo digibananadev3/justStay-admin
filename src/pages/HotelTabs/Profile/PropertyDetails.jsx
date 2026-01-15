@@ -11,6 +11,8 @@ const PropertyDetails = ({ hotel }) => {
   const stars = Array.from({ length: 5 }, (_, i) => i < data.rating);
   return (
     <div className="grid grid-cols-2 gap-y-6 gap-x-10">
+      {console.log("This is the value of the hotel in the PropertyDetails component", hotel)}
+            {console.log("This is the value of the data in the PropertyDetails component", data)}
       <div>
         <p className="text-[#4A5565] text-[12px] leading-4 tracking-[0px]">Hotel Name</p>
         <p className="text-[#101828] font-semibold text-[14px] leading-5 tracking-[0px]">{data.name}</p>

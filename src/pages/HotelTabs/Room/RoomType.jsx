@@ -1,21 +1,38 @@
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus } from "react-icons/fa";
 import { TbBed, TbChartBar } from "react-icons/tb";
 import CardComponent from "../../../components/Cards/CardComponent";
-import Container from '../../../components/BasicComponent/Container';
+import Container from "../../../components/BasicComponent/Container";
 import RoomTypeCard from "./RoomTypeCard";
 import { useProperty } from "../../HotelManagementDrawer";
+import AddRoomTypeModal from "./AddRoomTypeModal";
+import { useState } from "react";
+import EditRoomTypeModal from "./EditRoomTypeModal";
+import { useQueryClient } from "@tanstack/react-query";
 
 const RoomType = () => {
   const { property, propertyRooms } = useProperty() || {};
-  
+  const [openModal, setOpenModal] = useState(false);
+
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+
+  const queryClient = useQueryClient();
+
   // Calculate total rooms from propertyRooms
-  const totalRooms = propertyRooms?.reduce((sum, room) => sum + (room.numberOfRooms || 0), 0) || property?.roomCount || 0;
-  return(
+  const totalRooms =
+    propertyRooms?.reduce((sum, room) => sum + (room.numberOfRooms || 0), 0) ||
+    property?.roomCount ||
+    0;
+  return (
     <>
       <div className="p-4">
+        {console.log("This is the value of the propertyRooms", propertyRooms)}
         <div className="flex justify-between items-center">
-          <p className="font-medium text-[14px] leading-5 tracking-[0px]">Room Type & Configuration</p>
-          <button 
+          <p className="font-medium text-[14px] leading-5 tracking-[0px]">
+            Room Type & Configuration
+          </p>
+          <button
+            onClick={() => setOpenModal(true)}
             className="bg-[#0F766E]
             text-white
             px-4 py-2
@@ -24,8 +41,9 @@ const RoomType = () => {
             text-[14px]
             leading-5
             tracking-[0px]
-            font-medium
-            ">
+            font-medium cursor-pointer
+            "
+          >
             <FaPlus />
             Add Room Type
           </button>
@@ -33,22 +51,22 @@ const RoomType = () => {
         <div>
           <div className="grid grid-cols-2 gap-4 my-4">
             <CardComponent
-            title="Total Rooms"
-            totalNumber={totalRooms}
-            isIcon={true}
-            symbolIcon={<TbBed className="text-[#155DFC]" />}
-            borderColor="border-[#BEDBFF]"
-            bgColor="bg-[linear-gradient(135deg,#EFF6FF_0%,#DBEAFE_100%)]"
-            fontTitleColor="text-[#155DFC]"
+              title="Total Rooms"
+              totalNumber={totalRooms}
+              isIcon={true}
+              symbolIcon={<TbBed className="text-[#155DFC]" />}
+              borderColor="border-[#BEDBFF]"
+              bgColor="bg-[linear-gradient(135deg,#EFF6FF_0%,#DBEAFE_100%)]"
+              fontTitleColor="text-[#155DFC]"
             />
             <CardComponent
-            title="Occupancy Rate"
-            totalNumber={"N/A"}
-            isIcon={true}
-            symbolIcon={<TbChartBar className="text-[#008236]" />}
-            borderColor="border-[#B9F8CF]"
-            bgColor="bg-[linear-gradient(135deg,#F0FDF4_0%,#DCFCE7_100%)]"
-            fontTitleColor="text-[#008236]"
+              title="Occupancy Rate"
+              totalNumber={"N/A"}
+              isIcon={true}
+              symbolIcon={<TbChartBar className="text-[#008236]" />}
+              borderColor="border-[#B9F8CF]"
+              bgColor="bg-[linear-gradient(135deg,#F0FDF4_0%,#DCFCE7_100%)]"
+              fontTitleColor="text-[#008236]"
             />
           </div>
 
@@ -61,18 +79,24 @@ const RoomType = () => {
                     rooms: room.numberOfRooms || 0,
                     available: room.numberOfRooms || 0, // Not available in API
                     size: `${room.area || 0} sq ft`,
-                    beds: `${room.bed || 0} Bed${room.bed !== 1 ? 's' : ''}`,
+                    beds: `${room.bed || 0} Bed${room.bed !== 1 ? "s" : ""}`,
                     occupancy: `${room.bed || 0} Adults`, // Approximate
                     dailyRate: `₹${room.price?.oneNight || 0}`,
-                    hourlyBooking: { 
-                      available: room.price?.threeHours ? true : false, 
-                      price: room.price?.threeHours || 0, 
-                      duration: "3hrs" 
+                    hourlyBooking: {
+                      available: room.price?.threeHours ? true : false,
+                      price: room.price?.threeHours || 0,
+                      duration: "3hrs",
                     },
                   };
                   return (
                     <div key={room._id || idx} className="mb-4">
-                      <RoomTypeCard {...roomData} onEdit={() => {}} />
+                      <RoomTypeCard
+                        {...roomData}
+                        onEdit={() => {
+                          setSelectedRoom(room);
+                          setOpenEditModal(true);
+                        }}
+                      />
                     </div>
                   );
                 })
@@ -85,9 +109,27 @@ const RoomType = () => {
           </div>
         </div>
       </div>
-        
-    </>
-  )
-}
 
-export default RoomType
+      {/* ✅ ADD MODAL HERE */}
+ {openModal && (
+  <AddRoomTypeModal
+    onClose={() => setOpenModal(false)}
+    propertyId={property?._id}
+    onSuccess={() => queryClient.invalidateQueries(["propertyRooms"])}
+  />
+)}
+
+{openEditModal && selectedRoom && (
+  <EditRoomTypeModal
+    onClose={() => setOpenEditModal(false)}
+    propertyId={property?._id}
+    room={selectedRoom}
+    onSuccess={() => queryClient.invalidateQueries(["propertyRooms"])}
+  />
+)}
+
+    </>
+  );
+};
+
+export default RoomType;

@@ -52,24 +52,6 @@ export const updateProperty = async (propertyId, payload) => {
 };
 
 
-export const addAmenitiesInProperty = async (propertyId, amenities = []) => {
-  if (!propertyId) {
-    throw new Error("Property ID is required");
-  }
-
-  if (!Array.isArray(amenities) || amenities.length === 0) {
-    throw new Error("Amenities must be a non-empty array");
-  }
-
-  const { data } = await apiClient.post(
-    `${PROPERTIES_LIST}/amenities/${propertyId}`,
-    {
-      amenities,
-    }
-  );
-
-  return data;
-};
 
 
 
@@ -88,6 +70,7 @@ export const deleteProperty = async (propertyId) => {
 
 export const fetchPropertyById = async (propertyId) => {
   const { data } = await apiClient.get(`${PROPERTIES_LIST}/${propertyId}`);
+  console.log("This is the value of the data from the fetchPropertyById", data);
   return data;
 };
 
@@ -103,6 +86,19 @@ export const uploadPropertyPhotos = async (propertyId, photos) => {
       photos,
     }
   );
+  return data;
+};
+
+
+export const deletePropertyImage = async (propertyId, photoId) => {
+  if (!propertyId || !photoId) {
+    throw new Error("Property ID and Photo ID are required");
+  }
+
+  const { data } = await apiClient.delete(
+    `/properties/${propertyId}/media/photos/${photoId}`
+  );
+
   return data;
 };
 
@@ -139,4 +135,45 @@ export const fetchAllAmenities = async (
 
   const { data } = await apiClient.get(AMENITIES_LIST, { params });
   return data;
+};
+
+
+
+export const addAmenitiesInProperty = async (propertyId, amenities = []) => {
+  if (!propertyId) {
+    throw new Error("Property ID is required");
+  }
+
+  if (!Array.isArray(amenities) || amenities.length === 0) {
+    throw new Error("Amenities must be a non-empty array");
+  }
+
+  const { data } = await apiClient.post(
+    `${PROPERTIES_LIST}/amenities/${propertyId}`,
+    {
+      amenities,
+    }
+  );
+
+  return data;
+};
+
+
+
+export const removeAmmenitiesInProperty = async (propertyId, amenities) => {
+  try {
+    const { data } = await apiClient.delete(
+      `${PROPERTIES_LIST}/amenities/${propertyId}`,
+      {
+        data: {
+          amenities: amenities, // must be an array
+        },
+      }
+    );
+
+    return data;
+  } catch (error) {
+    console.error("Error removing amenities:", error.response?.data || error);
+    throw error;
+  }
 };

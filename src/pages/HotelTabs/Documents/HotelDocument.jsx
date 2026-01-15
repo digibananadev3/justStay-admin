@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { uploadFiles } from "../../../services/upload";
 import { uploadPropertyDocuments } from "../../../services/properties";
+import toast from "react-hot-toast";
 
 const HotelDocument = () => {
   const { property, propertyId } = useProperty() || {};
@@ -19,9 +20,9 @@ const HotelDocument = () => {
     "Pan",
     "Electricity",
     "Phone",
-    "GST",
-    "Business License",
-    "Other"
+    // "GST",
+    // "Business License",
+    // "Other"
   ];
 
   // Upload mutation
@@ -55,11 +56,13 @@ const HotelDocument = () => {
       }
     },
     onSuccess: () => {
-      alert("Documents uploaded successfully!");
+      // alert("Documents uploaded successfully!");
+          toast.success("Documents uploaded successfully!");
     },
     onError: (error) => {
       console.error("Upload error:", error);
-      alert(`Upload failed: ${error.message || "Unknown error"}`);
+      // alert(`Upload failed: ${error.message || "Unknown error"}`);
+      toast.error(`Upload failed: ${error.message || "Unknown error"}`);
     },
   });
 
@@ -98,6 +101,9 @@ const HotelDocument = () => {
 
   return (
     <>
+      {
+        console.log("This is the value of the documents", documents)
+      }
       <div className="flex justify-between mb-3">
         <p className="text-[#101828] text-[14px] leading-7 font-semibold">
           Documents & Verification
@@ -140,6 +146,7 @@ const HotelDocument = () => {
           title: doc.documentType || "Document",
           uploaded: doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : "N/A",
           status: doc.status?.toLowerCase() || "pending",
+          documentUrl : doc.documentUrl || ""
         }))} />
       </div>
     </>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   addAmenitiesInProperty,
+  removeAmmenitiesInProperty,
   fetchAllAmenities,
 } from "../../../services/properties";
 
@@ -30,7 +31,8 @@ const EditAmenities = ({
     const loadAmenities = async () => {
       setLoading(true);
       try {
-        const res = await fetchAllAmenities({ isActive: true });
+        const res = await fetchAllAmenities(1, 200, "", "", true);
+
         const apiAmenities = res.data || [];
 
         setOriginalAmenityNames([...currentAmenities]);
@@ -59,16 +61,12 @@ const EditAmenities = ({
 
   const addAmenity = (amenity) => {
     setSelectedAmenities((prev) =>
-      prev.some((a) => a._id === amenity._id)
-        ? prev
-        : [...prev, amenity]
+      prev.some((a) => a._id === amenity._id) ? prev : [...prev, amenity]
     );
   };
 
   const removeAmenity = (id) => {
-    setSelectedAmenities((prev) =>
-      prev.filter((a) => a._id !== id)
-    );
+    setSelectedAmenities((prev) => prev.filter((a) => a._id !== id));
   };
 
   const availableAmenities = amenities.filter(
@@ -77,29 +75,46 @@ const EditAmenities = ({
 
   const handleSave = async () => {
     try {
+      setLoading(true);
       const selectedNames = selectedAmenities.map((a) => a.name);
 
+      // Find removed ammenities
       const newAmenities = selectedNames.filter(
         (name) => !originalAmenityNames.includes(name)
       );
 
-      if (newAmenities.length === 0) {
-        onClose();
-        return;
+      // Find removed amenities
+      const removedAmenities = originalAmenityNames.filter(
+        (name) => !selectedNames.includes(name)
+      );
+
+      // if (newAmenities.length === 0) {
+      //   onClose();
+      //   return;
+      // }
+
+      // Call ADD API if needed
+      if (newAmenities.length > 0) {
+        await addAmenitiesInProperty(propertyId, newAmenities);
       }
 
-      await addAmenitiesInProperty(propertyId, newAmenities);
-      onClose();
-      onSuccess?.();
+      // Call REMOVE API if needed
+      if (removedAmenities.length > 0) {
+        await removeAmmenitiesInProperty(propertyId, removedAmenities);
+      }
+
+      await onSuccess?.();
+      setTimeout(onClose, 0); // let React finish state update first
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl flex flex-col max-h-[90vh]">
-
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4">
           <h3 className="text-lg font-semibold text-gray-800">
@@ -115,7 +130,6 @@ const EditAmenities = ({
 
         {/* Body */}
         <div className="p-6 space-y-6 overflow-hidden flex-1">
-
           {/* Selected Amenities */}
           <div>
             <p className="text-sm font-medium text-gray-700 mb-2">
@@ -153,9 +167,7 @@ const EditAmenities = ({
             </p>
 
             {loading && (
-              <div className="text-sm text-gray-500">
-                Loading amenities…
-              </div>
+              <div className="text-sm text-gray-500">Loading amenities…</div>
             )}
 
             {!loading && availableAmenities.length === 0 && (

@@ -25,17 +25,19 @@ const Badge = ({ status = "verified" }) => {
 };
 
 const VerificationStatus = ({
-  items = [
-    { title: "GST Certificate", uploaded: "2023-05-15", expires: "2026-05-15", status: "verified" },
-    { title: "Business License", uploaded: "2023-05-15", expires: "2025-12-31", status: "verified" },
-    { title: "Property Ownership", uploaded: "2023-05-15", status: "verified" },
-    { title: "Insurance Certificate", uploaded: "2024-01-10", expires: "2025-01-10", status: "pending" },
-  ],
+  // items = [
+  //   { title: "GST Certificate", uploaded: "2023-05-15", expires: "2026-05-15", status: "verified" },
+  //   { title: "Business License", uploaded: "2023-05-15", expires: "2025-12-31", status: "verified" },
+  //   { title: "Property Ownership", uploaded: "2023-05-15", status: "verified" },
+  //   { title: "Insurance Certificate", uploaded: "2024-01-10", expires: "2025-01-10", status: "pending" },
+  // ],
+  items=[],
   overall = "verified",
   onView = () => {},
 }) => {
   return (
     <>
+      {console.log("This is the value of the items in the Verification Status", items)}
       <div className="rounded-2xl border border-gray-200 bg-white">
         <div className="flex items-center justify-between p-4">
           <p className="text-[#101828] text-[14px] leading-7 font-semibold">Verification Status</p>

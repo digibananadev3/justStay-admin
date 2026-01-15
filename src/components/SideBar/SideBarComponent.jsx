@@ -11,12 +11,72 @@ import { FaAngleDown } from "react-icons/fa6";
 const SideBarComponent = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [openMenu, setOpenMenu] = useState(null);
+
+  const [openMenus, setOpenMenus] = useState({});
+
+  const toggleMenu = (key) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
 
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
   };
+
+ // ✅ Recursive menu renderer
+  const renderMenu = (items, parentKey = "") =>
+    items.map((item, index) => {
+      const key = `${parentKey}${index}`;
+      const Icon = item.icon;
+      const hasChildren = item.children?.length > 0;
+      const isOpen = openMenus[key];
+
+      return (
+        <div key={key}>
+          {/* Menu Item */}
+          <div
+            onClick={() => hasChildren && toggleMenu(key)}
+            className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium cursor-pointer transition hover:bg-gray-100"
+          >
+            <div className="flex items-center gap-3">
+              {Icon && <Icon className="w-5 h-5" />}
+              {hasChildren ? (
+                <span>{item.title}</span>
+              ) : (
+                <NavLink
+                  to={item.url}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-[#0f766e] font-semibold"
+                      : "text-gray-800"
+                  }
+                >
+                  {item.title}
+                </NavLink>
+              )}
+            </div>
+
+            {hasChildren && (
+              <FaAngleDown
+                className={`w-4 h-4 transition ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+              />
+            )}
+          </div>
+
+          {/* Children */}
+          {hasChildren && isOpen && (
+            <div className="ml-6 mt-1 flex flex-col gap-1 pl-3">
+              {renderMenu(item.children, `${key}-`)}
+            </div>
+          )}
+        </div>
+      );
+    });
 
   return (
     <Sidebar className="bg-white border-r shadow-sm flex flex-col">
@@ -24,7 +84,9 @@ const SideBarComponent = () => {
       <SidebarItems>
         <div className="w-[256px] px-7">
           <img className="w-[155px] pt-4" src={Logo} alt="logo" />
-          <p className="pt-1 pb-6 text-[#6A7282] text-[16px]">Admin Portal</p>
+          <p className="pt-1 pb-6 text-[#6A7282] text-[16px]">
+            Admin Portal
+          </p>
         </div>
       </SidebarItems>
 
@@ -32,66 +94,7 @@ const SideBarComponent = () => {
       <SidebarItems className="flex-1">
         <div className="px-4 pb-6">
           <nav className="flex flex-col gap-1">
-            {NavBarConfig.map((config) => {
-              const Icon = config.icon;
-              const hasChildren = config.children?.length > 0;
-              const isOpen = openMenu === config.title;
-
-              return (
-                <div key={config.title}>
-                  {/* Parent */}
-                  <NavLink
-                    to={config.url}
-                    onClick={() =>
-                      hasChildren
-                        ? setOpenMenu(isOpen ? null : config.title)
-                        : null
-                    }
-                    className={({ isActive }) =>
-                      `flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition ${
-                        isActive
-                          ? "bg-[#E9F7F8] border border-[#96F7E4] text-[#0f766e]"
-                          : "text-gray-800 hover:bg-gray-100"
-                      }`
-                    }
-                  >
-                    <div className="flex items-center gap-3">
-                      {Icon && <Icon className="w-5 h-5" />}
-                      <span>{config.title}</span>
-                    </div>
-
-                    {hasChildren && (
-                      <FaAngleDown
-                        className={`w-4 h-4 transition ${
-                          isOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    )}
-                  </NavLink>
-
-                  {/* Dropdown */}
-                  {hasChildren && isOpen && (
-                    <div className="ml-8 mt-1 flex flex-col gap-1">
-                      {config.children.map((child) => (
-                        <NavLink
-                          key={child.title}
-                          to={child.url}
-                          className={({ isActive }) =>
-                            `px-3 py-2 text-sm rounded-lg transition ${
-                              isActive
-                                ? "bg-blue-50 text-blue-700 font-semibold"
-                                : "text-gray-600 hover:bg-gray-100"
-                            }`
-                          }
-                        >
-                          {child.title}
-                        </NavLink>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {renderMenu(NavBarConfig)}
           </nav>
         </div>
       </SidebarItems>

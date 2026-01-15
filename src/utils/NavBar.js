@@ -23,34 +23,61 @@ export const NavBarConfig = [
     icon: LuUsers,
     url: "/guests-management",
   },
-  {
-    title: "Hotels Management",
-    icon: LuHotel,
-    url: "/hotel-management",
-  },
-  {
-    title: "Master Management",
-    icon: MdAdminPanelSettings,
-    url: "/master-management",
-    children: [
-      {
-        title: "Amenities",
-        url: "/master-management/amenities",
-      },
-      {
-        title: "Room Types",
-        url: "/master-management/room-types",
-      },
-      {
-        title: "Reviews",
-        url: "/master-management/reviews",
-      },
-      {
-        title: "Performance",
-        url: "/master-management/performance",
-      },
-    ],
-  },
+{
+  title: "Hotels Management",
+  icon: LuHotel,
+  children: [
+    {
+      title: "Dashboard",
+      url: "/hotel-management",
+    },
+    {
+      title: "Master Management",
+      icon: MdAdminPanelSettings,
+      children: [
+        {
+          title: "Property",
+          url: "/hotel-management/master-management/property-list",
+        },
+        {
+          title: "Property List",
+          url: "/hotel-management/master-management/property-list",
+        },
+        {
+          title: "Amenities",
+          url: "/hotel-management/master-management/amenities",
+        },
+        {
+          title: "Review",
+          url: "/hotel-management/master-management/review",
+        },
+      ],
+    },
+  ],
+},
+  // {
+  //   title: "Master Management",
+  //   icon: MdAdminPanelSettings,
+  //   url: "/master-management",
+  //   children: [
+  //     {
+  //       title: "Property",
+  //       url: "/master-management/amenities",
+  //     },
+  //     {
+  //       title: "Property List",
+  //       url: "/master-management/room-types",
+  //     },
+  //     {
+  //       title: "Ammenities",
+  //       url: "/master-management/reviews",
+  //     },
+  //     {
+  //       title: "Review",
+  //       url: "/master-management/performance",
+  //     },
+  //   ],
+  // },
   {
     title: "Verification",
     icon: FaUserCheck,

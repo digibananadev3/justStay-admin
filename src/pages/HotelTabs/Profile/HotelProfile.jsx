@@ -16,22 +16,68 @@ const HotelProfile = () => {
   const setProperty = context?.setProperty; // if available
 
   const [openEdit, setOpenEdit] = useState(false);
+  const [reloadPage, setReloadPage] = useState(false);
+  const [version, setVersion] = useState(0);
+  const [propertyData, setPropertyData] = useState(property);
 
 
-  const reloadProperty = async () => {
-    try {
-      const updated = await fetchPropertyById(property._id);
 
-      // If context provides setter
-      if (setProperty) {
-        setProperty(updated.data);
-      }
+//   const reloadProperty = async () => {
+//   try {
 
-      toast.success("Amenities updated successfully");
-    } catch (err) {
-      toast.error("Failed to refresh property");
+    
+//       await fetchPropertyById(property._id); // backend already updated
+//   setVersion(v => v + 1); // force rerender
+// };
+//     const response = await fetchPropertyById(property._id);
+
+//     console.log("This is the value of the response", response);
+
+
+//     // YOUR backend shape
+//     const updatedProperty =
+//       response?.data?.data?.property ||
+//       response?.data?.property ||
+//       response?.property;
+
+//     if (!updatedProperty || !updatedProperty._id) {
+//       console.error("Full response:", response);
+//       throw new Error("Invalid property response shape");
+//     }
+
+//     setProperty(prev => ({
+//       ...prev,
+//       ...updatedProperty,
+//       propertyAmenities: [...(updatedProperty.propertyAmenities || [])],
+//     }));
+
+//     toast.success("Amenities updated successfully");
+//   } catch (err) {
+//     console.error("Reload property error:", err);
+//     toast.error("Failed to refresh property");
+//   }
+// };
+
+
+const reloadProperty = async () => {
+  try {
+    const response = await fetchPropertyById(property._id);
+    const updatedProperty = response?.data?.data?.property || response?.data?.property || response?.data || response;
+    
+    setPropertyData(updatedProperty);
+    if (setProperty) {
+      setProperty(updatedProperty);
     }
-  };
+    
+    toast.success("Amenities updated successfully");
+  } catch (err) {
+    console.error("Reload property error:", err);
+    toast.error("Failed to refresh property");
+  }
+};
+
+
+
 
   if (!context) {
     return (
@@ -103,16 +149,16 @@ const HotelProfile = () => {
           onEditAmenities={() => setOpenEdit(true)}
         >
           <AmenitiesManagement
-            amenities={property.propertyAmenities || []}
-            certification={property.badges || {}}
-          />
+  amenities={propertyData?.propertyAmenities || []}
+  certification={property.badges || {}}
+/>
         </Container>
       </div>
 
       {/* Edit Modal / Drawer */}
       {openEdit && (
         <EditAmenities
-          currentAmenities={property?.propertyAmenities || []}
+          currentAmenities={propertyData?.propertyAmenities || []}
           propertyId={property?._id}
           onClose={() => setOpenEdit(false)}
           onSuccess={reloadProperty}

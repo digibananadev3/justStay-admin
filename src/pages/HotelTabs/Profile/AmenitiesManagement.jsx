@@ -22,6 +22,8 @@ const AmenitiesManagement = ({ amenities, certification }) => {
 const list = amenities?.length
   ? amenities.map(a => ({ label: a, icon: LuShieldCheck }))
   : defaultAmenities;
+
+  
   const certify = {
     title: 'goSafe Certified',
     description: 'Sanitization protocols, staff training, and safety measures verified',

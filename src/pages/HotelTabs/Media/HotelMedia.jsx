@@ -9,12 +9,15 @@ import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { uploadFiles } from "../../../services/upload";
 import { uploadPropertyPhotos } from "../../../services/properties";
+import EditHotelMediaModal from "./EditHotelMediaModal";   // ✅ NEW IMPORT
 
 const HotelMedia = ({ stats }) => {
   const { property, propertyId } = useProperty() || {};
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
   const queryClient = useQueryClient();
+
+  const [isEditOpen, setIsEditOpen] = useState(false);   // ✅ NEW STATE
 
   // Calculate stats from property photos
   const photos = property?.photos || [];
@@ -41,6 +44,7 @@ const HotelMedia = ({ stats }) => {
         if (!uploadResponse.urls || uploadResponse.urls.length === 0) {
           throw new Error("No files were uploaded");
         }
+        console.log("This is the value of the upload in the upload Mutation", uploadResponse);
 
         // Step 2: Prepare photos array with URLs
         const photosData = uploadResponse.urls.map((item) => ({
@@ -95,7 +99,8 @@ const HotelMedia = ({ stats }) => {
   };
 
   // Get image URLs from property photos
-  const imageUrls = photos.map(p => p.url).filter(Boolean);
+  // const imageUrls = photos.map(p => p.url).filter(Boolean);
+  const imageUrls = photos;
 
   return (
     <>
@@ -159,16 +164,26 @@ const HotelMedia = ({ stats }) => {
         </div>
         
         <div className="mt-6">
-          <Container title={"Hotel Images"}>
-            <HotelImages images={imageUrls} />
+          <Container title={"Hotel Images"}  onEditHotelMedia={() => setIsEditOpen(true)}>
+            <HotelImages images={imageUrls}   />
           </Container>
         </div>
 
-        <div className="mt-6">
+        {/* <div className="mt-6">
           <Container title={"Virtual Tours & Videos"}>
             <HotelVideo videoUrl={""} onSelect={() => {}} />
           </Container>
-        </div>
+        </div> */}
+
+
+           {isEditOpen && (
+        <EditHotelMediaModal
+          open={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          photos={photos}
+          propertyId={propertyId}
+        />
+      )}
       </div>
     </>
   );

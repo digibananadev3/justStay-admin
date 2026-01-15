@@ -88,6 +88,8 @@ useEffect(() => {
     staleTime: 30000, // Keep data fresh for 30 seconds
   });
 
+
+  
   const pagination = propertiesData?.pagination || {};
 
   const currentPage = pagination.page || page;
@@ -513,6 +515,7 @@ useEffect(() => {
           subTitle={"Manage all hotel properties and listings"}
         />
       </div>
+      {console.log("This is the value of the propertiesData", propertiesData)}
       <div className="flex gap-4 pt-8">
         {hotelCards.map((item) => (
           <CardComponent
