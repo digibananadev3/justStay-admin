@@ -2,7 +2,7 @@ import { LuImage } from "react-icons/lu";
 import { TbEdit } from "react-icons/tb";
 import { AiOutlineDelete } from "react-icons/ai";
 
-const HotelImages = ({ images = [], onEditImage, onDeleteImage }) => {
+const HotelImages = ({ images = [], onEditImage }) => {
   const placeholders = Array.from({ length: 4 });
   const items = images.length ? images : placeholders;
 
@@ -38,17 +38,9 @@ const HotelImages = ({ images = [], onEditImage, onDeleteImage }) => {
                 {/* EDIT */}
                 <button
                   onClick={() => onEditImage?.(item)}
-                  className="bg-white p-1.5 rounded-full shadow hover:bg-gray-100"
+                  className="bg-white p-1.5 rounded-full shadow hover:bg-gray-100 cursor-pointer"
                 >
                   <TbEdit className="text-[#0F766E] text-lg" />
-                </button>
-
-                {/* DELETE (send only ID) */}
-                <button
-                  onClick={() => onDeleteImage?.(item._id)}
-                  className="bg-white p-1.5 rounded-full shadow hover:bg-gray-100"
-                >
-                  <AiOutlineDelete className="text-red-500 text-lg" />
                 </button>
               </div>
             </>

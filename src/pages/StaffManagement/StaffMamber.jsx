@@ -200,7 +200,6 @@ const StaffMamber = () => {
         onClose={() => setOpenAdd(false)}
         onCreate={(payload) => {
           // TODO: integrate API call
-          console.log("create staff:", payload);
           setOpenAdd(false);
         }}
       />

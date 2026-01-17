@@ -36,10 +36,6 @@ const EditHotelDrawer = ({ isOpen, setIsOpen, propertyId }) => {
     const loadProperty = async () => {
       try {
         const res = await fetchPropertyById(propertyId);
-        console.log(
-          "This is the value of the res from the editHoteldrawer",
-          res
-        );
         const data = res.data;
 
         setFormData({

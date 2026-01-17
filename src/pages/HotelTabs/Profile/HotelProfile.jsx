@@ -31,7 +31,6 @@ const HotelProfile = () => {
 // };
 //     const response = await fetchPropertyById(property._id);
 
-//     console.log("This is the value of the response", response);
 
 
 //     // YOUR backend shape

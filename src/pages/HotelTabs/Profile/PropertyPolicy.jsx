@@ -28,7 +28,6 @@ const PropertyPolicy = ({ policy = {} }) => {
 
   return (
     <div className="space-y-6">
-      {console.log("This is the value of the policy in the Property Policy Component", policy)}
       <div className="grid grid-cols-2 gap-x-10">
         <div>
           <p className="text-[#4A5565] text-[12px] leading-4 tracking-[0px] mb-1">Check-in Time</p>

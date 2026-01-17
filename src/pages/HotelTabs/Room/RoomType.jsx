@@ -59,7 +59,6 @@ const handleDeleteRoom = async () => {
   return (
     <>
       <div className="p-4">
-        {console.log("This is the value of the propertyRooms", propertyRooms)}
         <div className="flex justify-between items-center">
           <p className="font-medium text-[14px] leading-5 tracking-[0px]">
             Room Type & Configuration

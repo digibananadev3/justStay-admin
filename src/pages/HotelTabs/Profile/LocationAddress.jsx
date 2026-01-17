@@ -33,7 +33,6 @@ const LocationAddress = ({ location }) => {
   return (
     <div className="space-y-5">
       <div>
-        {/* {console.log("This is the value of the location in the Location Address component", location)} */}
         <p className="text-[#4A5565] text-[12px] leading-4 tracking-[0px] mb-1">Complete Address</p>
         {/* <p className="text-[#101828] font-semibold text-[14px] leading-5 tracking-[0px] mb-1">{data.addressLine1}</p> */}
         {addressLine1 && (

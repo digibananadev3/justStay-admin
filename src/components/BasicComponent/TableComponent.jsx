@@ -47,7 +47,7 @@ const TableComponent = ({
                 <tr
                   key={rowIndex}
                   className="hover:bg-gray-100 transition-colors cursor-pointer"
-                  onClick={() => { console.log("ROw is clicked"); onRowClick && onRowClick(row, rowIndex)}}
+                  onClick={() => { onRowClick && onRowClick(row, rowIndex)}}
                 >
                   {columns.map((col, colIndex) => (
                     <td
@@ -146,9 +146,7 @@ const TableComponent = ({
                   {page}
                 </button>
               ))}
-              {console.log("This is the value of the currentPages in the TableComponent", currentPage)}
-              {console.log("This is the value of the totalItems in the TableComponent", totalItems)}
-              {console.log("This is the value of the pageSize in the TablePages", pageSize)}
+
               {/* Last page */}
               {currentPage < totalPages - 2 && (
                 <>

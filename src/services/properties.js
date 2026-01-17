@@ -55,22 +55,37 @@ export const updateProperty = async (propertyId, payload) => {
 
 
 
-export const deleteProperty = async (propertyId) => {
+// export const deleteProperty = async (propertyId) => {
+//   if (!propertyId) {
+//     throw new Error("Property ID is required");
+//   }
+
+//   const { data } = await apiClient.delete(
+//     `${PROPERTIES_LIST}/${propertyId}`
+//   );
+
+//   return data;
+// };
+
+
+
+
+export const softDeleteSingleProperty = async (propertyId) => {
   if (!propertyId) {
     throw new Error("Property ID is required");
   }
 
   const { data } = await apiClient.delete(
-    `${PROPERTIES_LIST}/${propertyId}`
+    `${PROPERTIES_LIST}/${propertyId}/delete`
   );
 
   return data;
 };
 
 
+
 export const fetchPropertyById = async (propertyId) => {
   const { data } = await apiClient.get(`${PROPERTIES_LIST}/${propertyId}`);
-  console.log("This is the value of the data from the fetchPropertyById", data);
   return data;
 };
 
@@ -101,6 +116,41 @@ export const deletePropertyImage = async (propertyId, photoId) => {
 
   return data;
 };
+
+
+
+export const updatePropertySinglePhotoStatus = async (
+  propertyId,
+  photoId,
+  status
+) => {
+  if (!propertyId) {
+    throw new Error("Property ID is required");
+  }
+
+  if (!photoId) {
+    throw new Error("Photo ID is required");
+  }
+
+  if (!["Pending", "Approved", "Rejected"].includes(status)) {
+    throw new Error("Invalid status value");
+  }
+
+  const { data } = await apiClient.patch(
+    `${PROPERTIES_LIST}/${propertyId}/media/photos/status`,
+    {
+      photos: [
+        {
+          photoId,
+          status,
+        },
+      ],
+    }
+  );
+
+  return data;
+};
+
 
 export const uploadPropertyDocuments = async (propertyId, documents) => {
   const { data } = await apiClient.post(

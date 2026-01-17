@@ -1,13 +1,4 @@
-import {
-  LuHotel,
-  LuCheck,
-  LuClock,
-  LuShieldCheck,
-  LuStar,
-  LuMapPin,
-  LuPhone,
-  LuEye,
-} from "react-icons/lu";
+import { LuHotel, LuCheck, LuClock, LuShieldCheck, LuStar, LuMapPin, LuPhone, LuEye } from "react-icons/lu";
 import CardComponent from "../components/Cards/CardComponent";
 import PageHeading from "../components/PageHeading/PageHeading";
 import HotelFilters from "../components/HotelManagement/HotelFilters";
@@ -17,11 +8,7 @@ import { BsThreeDots } from "react-icons/bs";
 import HotelManagementDrawer from "./HotelManagementDrawer";
 import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  fetchProperties,
-  fetchPropertiesStats,
-  exportProperties,
-} from "../services/properties";
+import { fetchProperties, fetchPropertiesStats, exportProperties, } from "../services/properties";
 import Loader from "../components/BasicComponent/Loader";
 import EditHotelDrawer from "./EditHotelDrawer";
 // import { AiTwotoneDelete } from "react-icons/ai";
@@ -111,7 +98,6 @@ useEffect(() => {
   const handleExport = async () => {
     try {
       const response = await exportProperties(searchQuery, statusFilter);
-      // console.log("This is the responsive of the handleExport", response);
 
       const blob = new Blob([response.data], {
         type: "text/csv;charset=utf-8;",
@@ -528,7 +514,7 @@ useEffect(() => {
         ))}
       </div>
 
-      <div className="p-6 my-6 border border-gray-200 rounded-2xl">
+      {/* <div className="p-6 my-6 border border-gray-200 rounded-2xl">
         <HotelFilters
           handleSearch={handleSearch}
           status={statusFilter || "All"}
@@ -538,9 +524,9 @@ useEffect(() => {
             setPage(1);
           }}
         />
-      </div>
+      </div> */}
 
-      <div>
+      <div className="my-6">
         <TableComponent
           columns={columns}
           data={data}
@@ -606,7 +592,6 @@ useEffect(() => {
             className="rounded-lg bg-red-600 px-4 py-2 text-sm text-white
                        hover:bg-red-700 transition"
             onClick={() => {
-              console.log("Confirmed delete:", deletePropertyId);
 
               // 👉 CALL DELETE API HERE
               // await deleteProperty(deletePropertyId)

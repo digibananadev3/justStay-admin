@@ -119,7 +119,6 @@ const handleSubmit = (e) => {
     amenities: room.amenities || ["WiFi", "Television"],
   };
 
-  console.log("UPDATE PAYLOAD:", payload);
 
   mutation.mutate({
     roomId: room._id,   // VERY IMPORTANT

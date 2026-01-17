@@ -141,9 +141,6 @@ const handleConfirmDelete = async () => {
 
   return (
     <>
-      {
-        console.log("This is the value of the documents", documents)
-      }
       <div className="flex justify-between mb-3">
         <p className="text-[#101828] text-[14px] leading-7 font-semibold">
           Documents & Verification

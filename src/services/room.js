@@ -30,7 +30,6 @@ export const fetchRoomTypes = async ({
 
 
 export const createRoomForSpecificProperty = async (payload) => {
-  console.log("This is the payload for the createRoomForSpecificProperty", payload);
   const { data } = await normalClient.post(CREATE_ROOM, payload);
   return data;
 };

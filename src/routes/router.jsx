@@ -48,10 +48,14 @@ const router = createBrowserRouter([
         element: <HotalManagementLayout />
       },
       {
-        path: "/master-management",
+        path: "/master-management/property",
         element: <AmenitiesManagementLayout />
       },
-            {
+      {
+        path: "/master-management/property-list",
+        element: <AmenitiesManagementLayout />
+      },
+      {
         path: "/master-management/amenities",
         element: <AmenitiesManagementLayout />
       },

@@ -37,19 +37,15 @@ export const NavBarConfig = [
       children: [
         {
           title: "Property",
-          url: "/hotel-management/master-management/property-list",
+          url: "/master-management/property",
         },
         {
           title: "Property List",
-          url: "/hotel-management/master-management/property-list",
+          url: "/master-management/property-list",
         },
         {
           title: "Amenities",
-          url: "/hotel-management/master-management/amenities",
-        },
-        {
-          title: "Review",
-          url: "/hotel-management/master-management/review",
+          url: "/master-management/amenities",
         },
       ],
     },

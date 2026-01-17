@@ -15,7 +15,6 @@ const GuestsProfile = () => {
   })
 
   if(isFetching) return <Loader />
-  console.log(data)
   return(
     <>
       <div className="flex gap-4">

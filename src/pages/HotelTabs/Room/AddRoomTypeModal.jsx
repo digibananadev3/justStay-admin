@@ -131,7 +131,6 @@ const AddRoomTypeModal = ({ onClose, propertyId, onSuccess }) => {
       amenities: ["WiFi", "Television"],
     };
 
-    console.log("FINAL PAYLOAD:", payload);
 
     mutation.mutate(payload);
   };

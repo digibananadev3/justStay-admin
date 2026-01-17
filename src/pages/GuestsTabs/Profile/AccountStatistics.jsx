@@ -6,7 +6,6 @@ const lableList = [{label: "Total Bookings", value: "0", access: "totalBookings"
 ]
 
 const AccountStatistics = ({accountDetail}) => {
-  console.log(accountDetail)
   return(
     <>
       <p className="font-poppins font-medium text-[14px] leading-5 tracking-[0px]">Account Statistics</p>

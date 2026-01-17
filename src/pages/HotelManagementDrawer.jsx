@@ -39,16 +39,6 @@ const HotelManagementDrawer = ({ isOpen, setIsOpen, propertyId, openEdit }) => {
   const propertyRooms = propertyData?.success ? propertyData.data?.propertyRoom : [];
 
   // Debug logging
-  console.log("HotelManagementDrawer Debug:", {
-    propertyId,
-    isOpen,
-    isLoading,
-    isFetching,
-    hasPropertyData: !!propertyData,
-    propertyDataSuccess: propertyData?.success,
-    property: !!property,
-    propertyRooms: propertyRooms?.length
-  });
 
   // Get property name for title
   const propertyName = property?.basicPropertyDetails?.name || "Loading...";

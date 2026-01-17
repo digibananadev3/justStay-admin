@@ -41,10 +41,6 @@ const VerificationStatus = ({
 }) => {
   return (
     <>
-      {console.log(
-        "This is the value of the items in the Verification Status",
-        items
-      )}
       <div className="rounded-2xl border border-gray-200 bg-white">
         <div className="flex items-center justify-between p-4">
           <p className="text-[#101828] text-[14px] leading-7 font-semibold">

@@ -32,7 +32,6 @@ const list = amenities?.length
 
   return (
     <div className="space-y-5">
-      {console.log("This is the value of the amenities in the Amenities Management component", amenities)}
       <div className="flex flex-wrap gap-2">
         {list.map((am, idx) => (
           <AmenityChip key={idx} icon={am.icon || LuShieldCheck} label={am.label} />
