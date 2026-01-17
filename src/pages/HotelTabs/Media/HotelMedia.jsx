@@ -8,8 +8,9 @@ import { useProperty } from "../../HotelManagementDrawer";
 import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { uploadFiles } from "../../../services/upload";
-import { uploadPropertyPhotos } from "../../../services/properties";
-import EditHotelMediaModal from "./EditHotelMediaModal";   // ✅ NEW IMPORT
+import { deletePropertyImage, uploadPropertyPhotos } from "../../../services/properties";
+import EditHotelMediaModal from "./EditHotelMediaModal";
+import toast from "react-hot-toast";
 
 const HotelMedia = ({ stats }) => {
   const { property, propertyId } = useProperty() || {};
@@ -17,9 +18,10 @@ const HotelMedia = ({ stats }) => {
   const [isUploading, setIsUploading] = useState(false);
   const queryClient = useQueryClient();
 
-  const [isEditOpen, setIsEditOpen] = useState(false);   // ✅ NEW STATE
+  // ✅ NEW: store only ONE selected image
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
-  // Calculate stats from property photos
   const photos = property?.photos || [];
   const totalPhotos = photos.length;
   const approvedPhotos = photos.filter(p => p.status === "Approved").length;
@@ -33,43 +35,32 @@ const HotelMedia = ({ stats }) => {
     ...stats,
   };
 
-  // Upload mutation
+  // Upload mutation (UNCHANGED)
   const uploadMutation = useMutation({
     mutationFn: async (files) => {
       setIsUploading(true);
       try {
-        // Step 1: Upload files to get URLs
         const uploadResponse = await uploadFiles(files, "photo");
-        
-        if (!uploadResponse.urls || uploadResponse.urls.length === 0) {
-          throw new Error("No files were uploaded");
-        }
-        console.log("This is the value of the upload in the upload Mutation", uploadResponse);
 
-        // Step 2: Prepare photos array with URLs
         const photosData = uploadResponse.urls.map((item) => ({
           name: "room",
           status: "Pending",
           url: item.url,
         }));
 
-        // Step 3: Upload photos to property
         await uploadPropertyPhotos(propertyId, photosData);
-
-        // Step 4: Refetch property data
         await queryClient.invalidateQueries({ queryKey: ["property", propertyId] });
-        
+
         return uploadResponse;
       } finally {
         setIsUploading(false);
       }
     },
     onSuccess: () => {
-      alert("Images uploaded successfully!");
+      toast.success("Images uploaded successfully!");
     },
     onError: (error) => {
-      console.error("Upload error:", error);
-      alert(`Upload failed: ${error.message || "Unknown error"}`);
+      toast.error("Upload failed");
     },
   });
 
@@ -78,13 +69,12 @@ const HotelMedia = ({ stats }) => {
     if (files.length === 0) return;
 
     if (!propertyId) {
-      alert("Please select a property first");
+      toast.error("Please select a property first");
       return;
     }
 
     uploadMutation.mutate(files);
-    
-    // Reset input
+
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -92,21 +82,40 @@ const HotelMedia = ({ stats }) => {
 
   const handleUploadClick = () => {
     if (!propertyId) {
-      alert("Please select a property first");
+      toast.error("Please select a property first");
       return;
     }
     fileInputRef.current?.click();
   };
 
-  // Get image URLs from property photos
-  // const imageUrls = photos.map(p => p.url).filter(Boolean);
-  const imageUrls = photos;
+  const handleDeleteImage = async (photoId) => {
+    if (!photoId) return;
+
+    if (!window.confirm("Are you sure you want to delete this image?")) return;
+
+    try {
+      await deletePropertyImage(propertyId, photoId);
+      await queryClient.invalidateQueries({ queryKey: ["property", propertyId] });
+      toast.success("Image deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete image");
+    }
+  };
+
+  // ✅ NEW: when clicking edit, store that photo & open modal
+  const handleEditImage = (photo) => {
+    setSelectedPhoto(photo);
+    setIsEditOpen(true);
+  };
 
   return (
     <>
       <div>
         <div className="flex justify-between mb-3">
-          <p className="text-[#101828] text-[14px] leading-7 font-semibold">Media Management</p>
+          <p className="text-[#101828] text-[14px] leading-7 font-semibold">
+            Media Management
+          </p>
+
           <div>
             <input
               ref={fileInputRef}
@@ -117,6 +126,7 @@ const HotelMedia = ({ stats }) => {
               onChange={handleFileSelect}
               disabled={isUploading}
             />
+
             <button
               onClick={handleUploadClick}
               disabled={isUploading || !propertyId}
@@ -129,18 +139,16 @@ const HotelMedia = ({ stats }) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <CardComponent
-              title="Total Images"
-              totalNumber={data.total}
-              isIcon={true}
-              symbolIcon={<LuImage className="text-[#7C3AED]" />}
-              borderColor="border-[#E9D5FF]"
-              bgColor="bg-[linear-gradient(135deg,#F5F3FF_0%,#F3E8FF_100%)]"
-              fontTitleColor="text-[#7C3AED]"
-              minRequired={data.minRequired}
-            />
-          </div>
+          <CardComponent
+            title="Total Images"
+            totalNumber={data.total}
+            isIcon={true}
+            symbolIcon={<LuImage className="text-[#7C3AED]" />}
+            borderColor="border-[#E9D5FF]"
+            bgColor="bg-[linear-gradient(135deg,#F5F3FF_0%,#F3E8FF_100%)]"
+            fontTitleColor="text-[#7C3AED]"
+            minRequired={data.minRequired}
+          />
 
           <CardComponent
             title="Approved"
@@ -162,28 +170,32 @@ const HotelMedia = ({ stats }) => {
             fontTitleColor="text-[#EA580C]"
           />
         </div>
-        
+
         <div className="mt-6">
-          <Container title={"Hotel Images"}  onEditHotelMedia={() => setIsEditOpen(true)}>
-            <HotelImages images={imageUrls}   />
+          <Container
+            title={"Hotel Images"}
+            onEditHotelMedia={() => setIsEditOpen(true)}
+          >
+            <HotelImages
+              images={photos}
+              onEditImage={(img) => handleEditImage(img)}  // ✅ FIXED
+              onDeleteImage={(img) => handleDeleteImage(img._id)}
+            />
           </Container>
         </div>
 
-        {/* <div className="mt-6">
-          <Container title={"Virtual Tours & Videos"}>
-            <HotelVideo videoUrl={""} onSelect={() => {}} />
-          </Container>
-        </div> */}
-
-
-           {isEditOpen && (
-        <EditHotelMediaModal
-          open={isEditOpen}
-          onClose={() => setIsEditOpen(false)}
-          photos={photos}
-          propertyId={propertyId}
-        />
-      )}
+        {/* ✅ SINGLE IMAGE EDIT MODAL */}
+        {isEditOpen && selectedPhoto && (
+          <EditHotelMediaModal
+            open={isEditOpen}
+            onClose={() => {
+              setIsEditOpen(false);
+              setSelectedPhoto(null);
+            }}
+            photo={selectedPhoto}   // ✅ IMPORTANT: pass single photo
+            propertyId={propertyId}
+          />
+        )}
       </div>
     </>
   );

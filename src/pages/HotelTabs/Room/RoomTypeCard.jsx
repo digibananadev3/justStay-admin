@@ -1,5 +1,6 @@
 import { TbBed, TbEdit } from "react-icons/tb";
 import { LuClock } from "react-icons/lu";
+import { AiOutlineDelete } from "react-icons/ai";
 
 const StatBox = ({ label, value }) => (
   <div className="bg-gray-50 rounded-md px-4 py-3 flex-1 min-w-[160px]">
@@ -18,6 +19,8 @@ const RoomTypeCard = ({
   dailyRate,
   hourlyBooking,
   onEdit,
+   onDelete,
+  roomId,
 }) => {
   return (
     <div className="rounded-2xl border border-[#E5E7EB] p-4">
@@ -31,9 +34,14 @@ const RoomTypeCard = ({
             <p className="text-[#667085] text-[12px] leading-4 tracking-[0px]">{rooms} rooms • {available} available</p>
           </div>
         </div>
-        <button onClick={onEdit} className="text-[#667085] hover:text-[#101828]">
-          <TbEdit />
+        <div className="flex items-center gap-3">
+        <button onClick={onEdit} className="text-[#667085] hover:text-[#101828] cursor-pointer">
+          <TbEdit className="text-lg" />
         </button>
+            <button  onClick={() => onDelete(roomId)} className="text-[#667085] hover:text-[#101828] cursor-pointer">
+          <AiOutlineDelete className="text-lg text-red-600" />
+        </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-4 gap-3 mt-4 max-md:grid-cols-2">

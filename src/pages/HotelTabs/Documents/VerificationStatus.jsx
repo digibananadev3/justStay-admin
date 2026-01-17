@@ -1,5 +1,6 @@
 import { LuFileText } from "react-icons/lu";
 import { FiEye } from "react-icons/fi";
+import { AiOutlineDelete } from "react-icons/ai";
 
 const Badge = ({ status = "verified" }) => {
   const map = {
@@ -18,7 +19,9 @@ const Badge = ({ status = "verified" }) => {
   };
   const s = map[status] || map.verified;
   return (
-    <span className={`px-2 py-1 rounded-full text-xs font-medium ${s.className}`}>
+    <span
+      className={`px-2 py-1 rounded-full text-xs font-medium ${s.className}`}
+    >
       {s.text}
     </span>
   );
@@ -31,16 +34,22 @@ const VerificationStatus = ({
   //   { title: "Property Ownership", uploaded: "2023-05-15", status: "verified" },
   //   { title: "Insurance Certificate", uploaded: "2024-01-10", expires: "2025-01-10", status: "pending" },
   // ],
-  items=[],
+  items = [],
   overall = "verified",
   onView = () => {},
+  onDelete = () => {},
 }) => {
   return (
     <>
-      {console.log("This is the value of the items in the Verification Status", items)}
+      {console.log(
+        "This is the value of the items in the Verification Status",
+        items
+      )}
       <div className="rounded-2xl border border-gray-200 bg-white">
         <div className="flex items-center justify-between p-4">
-          <p className="text-[#101828] text-[14px] leading-7 font-semibold">Verification Status</p>
+          <p className="text-[#101828] text-[14px] leading-7 font-semibold">
+            Verification Status
+          </p>
           <Badge status={overall} />
         </div>
 
@@ -55,14 +64,12 @@ const VerificationStatus = ({
                   <LuFileText />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-[#101828]">{item.title}</p>
+                  <p className="text-sm font-semibold text-[#101828]">
+                    {item.title}
+                  </p>
                   <p className="text-xs text-gray-500 mt-0.5">
                     Uploaded: {item.uploaded}
-                    {item.expires && (
-                      <>
-                        {" "}•{" "}Expires: {item.expires}
-                      </>
-                    )}
+                    {item.expires && <> • Expires: {item.expires}</>}
                   </p>
                 </div>
               </div>
@@ -71,11 +78,20 @@ const VerificationStatus = ({
                 <Badge status={item.status} />
                 <button
                   type="button"
-                  onClick={() => onView(item)}
+                  onClick={() => onView(item.originalDoc || item)}
                   className="text-gray-500 hover:text-gray-700"
                   aria-label={`View ${item.title}`}
                 >
                   <FiEye />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onDelete(item.originalDoc || item)}
+                  className="text-red-500 hover:text-red-700 cursor-pointer"
+                  aria-label={`Delete ${item.title}`}
+                >
+                  <AiOutlineDelete className="text-lg" />
                 </button>
               </div>
             </div>
@@ -86,4 +102,4 @@ const VerificationStatus = ({
   );
 };
 
-export default VerificationStatus;      
+export default VerificationStatus;

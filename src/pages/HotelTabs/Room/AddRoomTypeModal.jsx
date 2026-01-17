@@ -4,16 +4,19 @@ import {
   fetchRoomTypes,
   createRoomForSpecificProperty,
 } from "../../../services/room";
+import { uploadFiles } from "../../../services/upload";   // 🔥 SAME FUNCTION
 import Loader from "../../../components/BasicComponent/Loader";
 import toast from "react-hot-toast";
 
-const AddRoomTypeModal = ({ onClose, propertyId, onSuccess  }) => {
+const AddRoomTypeModal = ({ onClose, propertyId, onSuccess }) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["roomTypes"],
     queryFn: () => fetchRoomTypes({ onlyActive: true }),
   });
 
   const roomTypes = data?.data || [];
+
+  const [isUploading, setIsUploading] = useState(false);
 
   const [formData, setFormData] = useState({
     roomTypeId: "",
@@ -24,7 +27,8 @@ const AddRoomTypeModal = ({ onClose, propertyId, onSuccess  }) => {
     oneNight: "",
     threeHours: "",
     sixHours: "",
-    photos: [],
+    files: [],      // REAL files
+    previews: [],   // UI previews
   });
 
   const handleChange = (e) => {
@@ -35,32 +39,37 @@ const AddRoomTypeModal = ({ onClose, propertyId, onSuccess  }) => {
     }));
   };
 
+  // ✅ MATCHING YOUR EDIT HOTEL UPLOAD FLOW
   const handlePhotoChange = (e) => {
-    const files = Array.from(e.target.files);
-    const urls = files.map((file) =>
+    const files = Array.from(e.target.files || []);
+
+    const previewUrls = files.map((file) =>
       URL.createObjectURL(file)
-    ); // temporary preview URLs
+    );
 
     setFormData((prev) => ({
       ...prev,
-      photos: urls,
+      files: files,
+      previews: previewUrls,
     }));
   };
 
   const mutation = useMutation({
-    mutationFn: createRoomForSpecificProperty,
-  onSuccess: () => {
-  toast.success("Room created successfully");
-  onSuccess();   // 🔥 REFRESH LIST
-  onClose();
-},
+    mutationFn: async (payload) => {
+      return createRoomForSpecificProperty(payload);
+    },
+    onSuccess: () => {
+      toast.success("Room created successfully");
+      onSuccess();
+      onClose();
+    },
     onError: (err) => {
       toast.error("Room creation failed");
       console.error(err);
     },
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const selectedRoomType = roomTypes.find(
@@ -69,6 +78,28 @@ const AddRoomTypeModal = ({ onClose, propertyId, onSuccess  }) => {
 
     const totalRooms = Number(formData.numberOfRooms);
 
+    let photoUrls = [];
+
+    // ✅ STEP 1 — Upload images FIRST (exactly like your Edit modal)
+    if (formData.files.length > 0) {
+      setIsUploading(true);
+      try {
+        const uploadResponse = await uploadFiles(
+          formData.files,
+          "photo"
+        );
+
+        photoUrls = uploadResponse.urls.map((item) => item.url);
+      } catch (err) {
+        toast.error("Image upload failed");
+        console.error(err);
+        setIsUploading(false);
+        return;
+      }
+      setIsUploading(false);
+    }
+
+    // ✅ STEP 2 — Create room payload with REAL URLs
     const payload = {
       userId: "6967776381a63e844d59dba5",
       propertyId: propertyId,
@@ -89,17 +120,19 @@ const AddRoomTypeModal = ({ onClose, propertyId, onSuccess  }) => {
         sixHours: Number(formData.sixHours || 0),
       },
 
-      photos: formData.photos.length
-        ? formData.photos
-        : [
-            "https://example.com/room1.jpg",
-            "https://example.com/room2.jpg",
-          ],
+      photos:
+        photoUrls.length > 0
+          ? photoUrls
+          : [
+              "https://example.com/room1.jpg",
+              "https://example.com/room2.jpg",
+            ],
 
       amenities: ["WiFi", "Television"],
     };
 
-    console.log("Final Payload Sent:", payload);
+    console.log("FINAL PAYLOAD:", payload);
+
     mutation.mutate(payload);
   };
 
@@ -130,7 +163,6 @@ const AddRoomTypeModal = ({ onClose, propertyId, onSuccess  }) => {
 
         {!isLoading && (
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Room Type */}
             <div>
               <label className="block text-sm font-medium mb-1">
                 Room Type
@@ -151,7 +183,6 @@ const AddRoomTypeModal = ({ onClose, propertyId, onSuccess  }) => {
               </select>
             </div>
 
-            {/* Grid Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label>Area (sq ft)</label>
@@ -202,7 +233,6 @@ const AddRoomTypeModal = ({ onClose, propertyId, onSuccess  }) => {
               </div>
             </div>
 
-            {/* Prices */}
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <label>1 Night Price (₹)</label>
@@ -239,7 +269,6 @@ const AddRoomTypeModal = ({ onClose, propertyId, onSuccess  }) => {
               </div>
             </div>
 
-            {/* Multiple Photos */}
             <div>
               <label>Room Photos (multiple)</label>
               <input
@@ -251,7 +280,7 @@ const AddRoomTypeModal = ({ onClose, propertyId, onSuccess  }) => {
               />
 
               <div className="flex gap-2 mt-2">
-                {formData.photos.map((img, idx) => (
+                {formData.previews.map((img, idx) => (
                   <img
                     key={idx}
                     src={img}
@@ -262,7 +291,6 @@ const AddRoomTypeModal = ({ onClose, propertyId, onSuccess  }) => {
               </div>
             </div>
 
-            {/* Buttons */}
             <div className="flex justify-end gap-3 mt-4">
               <button
                 type="button"
@@ -274,10 +302,14 @@ const AddRoomTypeModal = ({ onClose, propertyId, onSuccess  }) => {
 
               <button
                 type="submit"
-                disabled={mutation.isLoading}
+                disabled={mutation.isLoading || isUploading}
                 className="bg-[#0F766E] text-white px-5 py-2 rounded-md"
               >
-                {mutation.isLoading ? "Submitting..." : "Submit Room"}
+                {isUploading
+                  ? "Uploading images..."
+                  : mutation.isLoading
+                  ? "Submitting..."
+                  : "Submit Room"}
               </button>
             </div>
           </form>

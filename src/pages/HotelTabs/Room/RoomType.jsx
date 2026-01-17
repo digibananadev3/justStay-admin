@@ -8,6 +8,11 @@ import AddRoomTypeModal from "./AddRoomTypeModal";
 import { useState } from "react";
 import EditRoomTypeModal from "./EditRoomTypeModal";
 import { useQueryClient } from "@tanstack/react-query";
+import { deleteRoomForSpecificProperty } from "../../../services/room";
+import toast from "react-hot-toast";
+import ConfirmDeleteRoomModal from "./ConfirmDeleteRoomModal";
+
+
 
 const RoomType = () => {
   const { property, propertyRooms } = useProperty() || {};
@@ -16,7 +21,35 @@ const RoomType = () => {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
 
+  const [roomToDelete, setRoomToDelete] = useState(null);
+const [isDeleting, setIsDeleting] = useState(false);
+
+
   const queryClient = useQueryClient();
+
+const handleDeleteRoom = async () => {
+  if (!roomToDelete) return;
+
+  try {
+    setIsDeleting(true);
+
+    await deleteRoomForSpecificProperty(roomToDelete);
+
+    toast.success("Room deleted successfully");
+
+    // Close modal & reset state
+    setRoomToDelete(null);
+
+    // Refresh list
+    queryClient.invalidateQueries(["propertyRooms"]);
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to delete room");
+  } finally {
+    setIsDeleting(false);
+  }
+};
+
 
   // Calculate total rooms from propertyRooms
   const totalRooms =
@@ -92,10 +125,12 @@ const RoomType = () => {
                     <div key={room._id || idx} className="mb-4">
                       <RoomTypeCard
                         {...roomData}
+                        roomId={room._id}
                         onEdit={() => {
                           setSelectedRoom(room);
                           setOpenEditModal(true);
                         }}
+                        onDelete={(id) => setRoomToDelete(id)}
                       />
                     </div>
                   );
@@ -127,6 +162,15 @@ const RoomType = () => {
     onSuccess={() => queryClient.invalidateQueries(["propertyRooms"])}
   />
 )}
+
+
+
+<ConfirmDeleteRoomModal
+  isOpen={!!roomToDelete}
+  onClose={() => setRoomToDelete(null)}
+  onConfirm={handleDeleteRoom}
+  isLoading={isDeleting}
+/>
 
     </>
   );

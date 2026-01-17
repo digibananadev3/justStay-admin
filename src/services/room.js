@@ -30,6 +30,7 @@ export const fetchRoomTypes = async ({
 
 
 export const createRoomForSpecificProperty = async (payload) => {
+  console.log("This is the payload for the createRoomForSpecificProperty", payload);
   const { data } = await normalClient.post(CREATE_ROOM, payload);
   return data;
 };
@@ -38,5 +39,16 @@ export const createRoomForSpecificProperty = async (payload) => {
 
 export const updateRoomForSpecificProperty = async (roomId, payload) => {
   const { data } = await normalClient.put(`/rooms/${roomId}`, payload);
+  return data;
+};
+
+
+
+export const deleteRoomForSpecificProperty = async (roomId) => {
+  if (!roomId) {
+    throw new Error("Room ID is required");
+  }
+
+  const { data } = await normalClient.delete(`/rooms/${roomId}`);
   return data;
 };

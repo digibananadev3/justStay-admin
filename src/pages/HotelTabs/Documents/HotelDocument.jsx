@@ -6,6 +6,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { uploadFiles } from "../../../services/upload";
 import { uploadPropertyDocuments } from "../../../services/properties";
 import toast from "react-hot-toast";
+import ViewAndEditDocument from "./ViewAndEditDocument";
+import { deletePropertyDocument } from "../../../services/properties";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+
 
 const HotelDocument = () => {
   const { property, propertyId } = useProperty() || {};
@@ -13,6 +17,12 @@ const HotelDocument = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [documentType, setDocumentType] = useState("Aadhar");
   const queryClient = useQueryClient();
+
+  const [selectedDoc, setSelectedDoc] = useState(null);
+
+
+  const [docToDelete, setDocToDelete] = useState(null);
+const [isDeleting, setIsDeleting] = useState(false);
 
   // Document types
   const documentTypes = [
@@ -66,6 +76,12 @@ const HotelDocument = () => {
     },
   });
 
+
+  const refreshData = () => {
+  queryClient.invalidateQueries({ queryKey: ["property", propertyId] });
+};
+
+
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
@@ -95,6 +111,30 @@ const HotelDocument = () => {
     }
     fileInputRef.current?.click();
   };
+
+
+// const handleDeleteClick = (doc) => {
+//   setDocToDelete(doc);
+// };
+
+const handleConfirmDelete = async () => {
+  if (!docToDelete?._id || !propertyId) return;
+
+  try {
+    setIsDeleting(true);
+    await deletePropertyDocument(propertyId, docToDelete._id);
+    toast.success("Document deleted successfully");
+    refreshData();
+    setDocToDelete(null); // close modal
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to delete document");
+  } finally {
+    setIsDeleting(false);
+  }
+};
+
+
 
   // Get documents from property
   const documents = property?.documents || [];
@@ -142,13 +182,50 @@ const HotelDocument = () => {
       </div>
 
       <div>
-        <VerificationStatus items={documents.map((doc) => ({
+        {/* <VerificationStatus items={documents.map((doc) => ({
           title: doc.documentType || "Document",
           uploaded: doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : "N/A",
           status: doc.status?.toLowerCase() || "pending",
-          documentUrl : doc.documentUrl || ""
-        }))} />
+          documentUrl : doc.documentUrl || "",
+           onView: () => setSelectedDoc(doc),
+        }))} /> */}
+
+        <VerificationStatus
+  items={documents.map((doc) => ({
+    title: doc.documentType || "Document",
+    uploaded: doc.uploadedAt
+      ? new Date(doc.uploadedAt).toLocaleDateString()
+      : "N/A",
+    status: doc.status?.toLowerCase() || "pending",
+    documentUrl: doc.documentUrl || "",
+    originalDoc: doc,      // 🔥 VERY IMPORTANT
+  }))}
+  onView={(doc) => setSelectedDoc(doc.originalDoc || doc)}
+onDelete={(doc) => setDocToDelete(doc.originalDoc || doc)}
+/>
       </div>
+
+
+
+      {selectedDoc && (
+  <ViewAndEditDocument
+    doc={selectedDoc}
+    propertyId={propertyId}
+    onClose={() => setSelectedDoc(null)}
+    onUpdated={refreshData}
+  />
+)}
+
+
+
+  <ConfirmDeleteModal
+  isOpen={!!docToDelete}
+  title={`Delete ${docToDelete?.documentType || "Document"}?`}
+  message="Are you sure you want to delete this document permanently?"
+  onClose={() => setDocToDelete(null)}
+  onConfirm={handleConfirmDelete}
+  isLoading={isDeleting}
+/>
     </>
   )
 }

@@ -115,6 +115,46 @@ export const uploadPropertyDocuments = async (propertyId, documents) => {
 
 
 
+export const updatePropertyDocument = async (
+  propertyId,
+  documentId,
+  payload   // <-- changed from "documents"
+) => {
+  if (!propertyId) {
+    throw new Error("Property ID is required");
+  }
+
+  if (!documentId) {
+    throw new Error("Document ID is required");
+  }
+
+  if (!payload || typeof payload !== "object") {
+    throw new Error("Payload must be an object");
+  }
+
+  const { data } = await apiClient.put(
+    `/properties/${propertyId}/documents/${documentId}`,
+    payload
+  );
+
+  return data;
+};
+
+
+
+export const deletePropertyDocument = async (propertyId, documentId) => {
+  if (!propertyId || !documentId) {
+    throw new Error("Property ID and Document ID are required");
+  }
+
+  const { data } = await apiClient.delete(
+    `/properties/${propertyId}/documents/${documentId}`
+  );
+
+  return data;
+};
+
+
 
 
 export const fetchAllAmenities = async (
@@ -176,4 +216,31 @@ export const removeAmmenitiesInProperty = async (propertyId, amenities) => {
     console.error("Error removing amenities:", error.response?.data || error);
     throw error;
   }
+};
+
+
+
+export const fetchPropertyPerformance = async (propertyId) => {
+  if (!propertyId) {
+    throw new Error("Property ID is required");
+  }
+
+  const { data } = await apiClient.get(
+    `${PROPERTIES_LIST}/${propertyId}/performance`
+  );
+
+  return data;
+};
+
+
+export const fetchPropertyReviewSummary = async (propertyId) => {
+  if (!propertyId) {
+    throw new Error("Property ID is required");
+  }
+
+  const { data } = await apiClient.get(
+    `${PROPERTIES_LIST}/${propertyId}/reviews/summary`
+  );
+
+  return data;
 };
