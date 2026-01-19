@@ -31,7 +31,7 @@ const EditAmenities = ({
     const loadAmenities = async () => {
       setLoading(true);
       try {
-        const res = await fetchAllAmenities(1, 200, "", "", true);
+        const res = await fetchAllAmenities(1, 200, "", "property", true);
 
         const apiAmenities = res.data || [];
 

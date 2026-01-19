@@ -4,6 +4,8 @@ import apiClient from "./api/apiClient";
 const PROPERTIES_LIST = "/properties";
 const AMENITIES_LIST = "/amenities";
 
+
+
 export const fetchProperties = async (
   page = 1,
   limit = 10,
@@ -20,6 +22,7 @@ export const fetchProperties = async (
   const { data } = await apiClient.get(PROPERTIES_LIST, { params });
   return data;
 };
+
 
 export const exportProperties = async (search = "", status = "") => {
   const params = {};
@@ -211,7 +214,7 @@ export const fetchAllAmenities = async (
   page = 1,
   limit = 200,
   search = "",
-  category = "",
+  category = "room",
   isActive = ""
 ) => {
   const params = {
