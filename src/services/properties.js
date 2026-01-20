@@ -3,6 +3,8 @@ import apiClient from "./api/apiClient";
 
 const PROPERTIES_LIST = "/properties";
 const AMENITIES_LIST = "/amenities";
+const PROPERTY_TYPES = "/property-types";
+
 
 
 
@@ -293,6 +295,173 @@ export const fetchPropertyReviewSummary = async (propertyId) => {
 
   const { data } = await apiClient.get(
     `${PROPERTIES_LIST}/${propertyId}/reviews/summary`
+  );
+
+  return data;
+};
+
+
+
+
+
+
+
+
+// THIS IS THE CRUD OF THE PROPERTY TYPE 
+
+
+
+// GET PROPERTY TYPE
+export const getAllPropertyTypes = async (isActive = "") => {
+  const params = {};
+
+  if (isActive === true || isActive === false) {
+    params.isActive = isActive;
+  }
+
+  const { data } = await apiClient.get(PROPERTY_TYPES, { params });
+  return data;
+};
+
+
+
+// GET PROPERTY TYPE STATS
+export const getPropertyTypeStats = async () => {
+  const { data } = await apiClient.get(
+    `${PROPERTY_TYPES}/property-types-stats`
+  );
+  return data;
+};
+
+
+
+// CREATE NEW PROPERTY TYPE (POST)
+export const createNewPropertyType = async (payload) => {
+  if (!payload || typeof payload !== "object") {
+    throw new Error("Payload must be an object");
+  }
+
+  const { name } = payload;
+
+  if (!name) {
+    throw new Error("Property type name is required");
+  }
+
+  const { data } = await apiClient.post(PROPERTY_TYPES, payload);
+  return data;
+};
+
+
+
+// UPDATE SINGLE PROPERTY TYPE (PUT)
+export const updateSinglePropertyType = async (propertyTypeId, payload) => {
+  if (!propertyTypeId) {
+    throw new Error("Property Type ID is required");
+  }
+
+  if (!payload || typeof payload !== "object") {
+    throw new Error("Payload must be an object");
+  }
+
+  const { data } = await apiClient.put(
+    `${PROPERTY_TYPES}/${propertyTypeId}`,
+    payload
+  );
+
+  return data;
+};
+
+
+
+// DELETE SINGLE PROPERTY TYPE (DELETE)
+export const deleteSinglePropertyType = async (propertyTypeId) => {
+  if (!propertyTypeId) {
+    throw new Error("Property Type ID is required");
+  }
+
+  const { data } = await apiClient.delete(
+    `${PROPERTY_TYPES}/${propertyTypeId}`
+  );
+
+  return data;
+};
+
+
+
+// THIS IS THE CRUD OF THE PROPERTY LIST TYPE
+
+
+// GET PROPERTY LIST TYPE STATS
+export const getPropertyListTypeStats = async () => {
+  const { data } = await apiClient.get(
+    "/property-list-types/property-type-list-stats"
+  );
+  return data;
+};
+
+
+
+// GET ALL PROPERTY LIST TYPES
+export const getAllPropertyListTypes = async () => {
+  const { data } = await apiClient.get("/property-list-types");
+  return data;
+};
+
+
+
+// CREATE NEW PROPERTY LIST TYPE (POST)
+// CREATE NEW PROPERTY LIST TYPE (POST)
+export const createPropertyListType = async (payload) => {
+  if (!payload || typeof payload !== "object") {
+    throw new Error("Payload must be an object");
+  }
+
+  if (!payload.propertyTypeId) {
+    throw new Error("propertyTypeId is required");
+  }
+
+  if (!payload.PropertyListTypeName) {
+    throw new Error("PropertyListTypeName is required");
+  }
+
+  const { data } = await apiClient.post(
+    "/property-list-types",
+    payload
+  );
+
+  return data;
+};
+
+
+
+// UPDATE SINGLE PROPERTY LIST TYPE (PUT)
+export const updateSinglePropertyListType = async (propertyListTypeId, payload) => {
+  if (!propertyListTypeId) {
+    throw new Error("Property List Type ID is required");
+  }
+
+  if (!payload || typeof payload !== "object") {
+    throw new Error("Payload must be an object");
+  }
+
+  const { data } = await apiClient.put(
+    `/property-list-types/${propertyListTypeId}`,
+    payload
+  );
+
+  return data;
+};
+
+
+
+// DELETE SINGLE PROPERTY LIST TYPE (DELETE)
+export const deleteSinglePropertyListType = async (propertyListTypeId) => {
+  if (!propertyListTypeId) {
+    throw new Error("Property List Type ID is required");
+  }
+
+  const { data } = await apiClient.delete(
+    `/property-list-types/${propertyListTypeId}`
   );
 
   return data;

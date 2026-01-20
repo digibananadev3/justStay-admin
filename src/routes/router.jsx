@@ -17,6 +17,8 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import PublicRoute from "../components/PublicRoute";
 import MasterManagementLayout from "../layouts/MasterManagementLayout";
 import AmenitiesManagementLayout from "../layouts/AmenitiesManagementLayout";
+import PropertyManagementLayout from "../layouts/PropertyManagementLayout";
+import PropertyListTypeManagementLayout from "../layouts/PropertyListTypeManagementLayout";
 
 const router = createBrowserRouter([
   {
@@ -49,11 +51,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/master-management/property",
-        element: <AmenitiesManagementLayout />
+        element: <PropertyManagementLayout />
       },
       {
         path: "/master-management/property-list",
-        element: <AmenitiesManagementLayout />
+        element: <PropertyListTypeManagementLayout />
       },
       {
         path: "/master-management/amenities",

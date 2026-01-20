@@ -36,11 +36,11 @@ export const NavBarConfig = [
       icon: MdAdminPanelSettings,
       children: [
         {
-          title: "Property",
+          title: "Property Type",
           url: "/master-management/property",
         },
         {
-          title: "Property List",
+          title: "Property List Type",
           url: "/master-management/property-list",
         },
         {

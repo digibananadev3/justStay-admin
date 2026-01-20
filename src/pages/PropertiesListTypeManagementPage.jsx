@@ -10,17 +10,16 @@ import {
 } from "react-icons/lu";
 import CardComponent from "../components/Cards/CardComponent";
 import PageHeading from "../components/PageHeading/PageHeading";
-import HotelFilters from "../components/HotelManagement/HotelFilters";
 import TableComponent from "../components/BasicComponent/TableComponent";
 import { FaRegEdit } from "react-icons/fa";
-import { BsThreeDots } from "react-icons/bs";
 import HotelManagementDrawer from "./HotelManagementDrawer";
 import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  fetchProperties,
-  fetchPropertiesStats,
-  exportProperties,
+//   fetchProperties,
+//   fetchPropertiesStats,
+//   exportProperties,
+  updateSinglePropertyListType,
 } from "../services/properties";
 import Loader from "../components/BasicComponent/Loader";
 import EditHotelDrawer from "./EditHotelDrawer";
@@ -33,17 +32,38 @@ import {
   fetchAllAmenities,
   updateAmenity,
   createNewAmenity,
-  deleteAmenity
+  deleteAmenity,
+  // updateSinglePropertyListType
 } from "../services/ammenities.js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import UpdateAmenityForm from "../components/HotelManagement/UpdateAmenityForm.jsx";
 import CreateAmenityForm from "../components/HotelManagement/CreateAmenityForm.jsx";
 import { IoAddOutline } from "react-icons/io5";
 import ConfirmAmenityDelete from "../components/HotelManagement/ConfirmAmenityDelete.jsx";
+import {
+  getAllPropertyTypes,
+  //   getPropertyTypeStats,
+  //   getPropertyListTypeStats, // add this
+  //   createPropertyListType,
+  //   createNewPropertyType,
+  updateSinglePropertyType,
+  deleteSinglePropertyType,
+} from "../services/properties";
+// import CreatePropertyTypeForm from "../components/HotelManagement/CreatePropertyTypeForm.jsx";
+import CreatePropertyListTypeForm from "../components/HotelManagement/CreatePropertyListTypeForm.jsx";
+// import UpdatePropertyTypeForm from "../components/HotelManagement/UpdatePropertyTypeForm.jsx";
+import UpdatePropertyListTypeForm from "../components/HotelManagement/UpdatePropertyListTypeForm.jsx";
+import ConfirmPropertyTypeDelete from "../components/HotelManagement/ConfirmPropertyTypeDelete.jsx";
+import {
+  getAllPropertyListTypes,
+  getPropertyListTypeStats,
+  createPropertyListType,
+  deleteSinglePropertyListType,
+} from "../services/properties";
+import ConfirmDeletePropertyListType from "../components/HotelManagement/ConfirmDeletePropertyListType.jsx";
 import toast from "react-hot-toast";
 
-
-const AmenitiesManagementPage = () => {
+const PropertiesListTypeManagementPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPropertyId, setSelectedPropertyId] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -55,16 +75,25 @@ const AmenitiesManagementPage = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deletePropertyId, setDeletePropertyId] = useState(null);
 
-  const [editAmenity, setEditAmenity] = useState(null); // stores selected row
-  const [isEditAmenityOpen, setIsEditAmenityOpen] = useState(false);
+  // const [editAmenity, setEditAmenity] = useState(null); // stores selected row
+  // const [isEditAmenityOpen, setIsEditAmenityOpen] = useState(false);
+
+  // const [editPropertyType, setEditPropertyType] = useState(null);
+  // const [isEditPropertyTypeOpen, setIsEditPropertyTypeOpen] = useState(false);
+
+  const [editPropertyListType, setEditPropertyListType] = useState(null);
+  const [isEditPropertyListTypeOpen, setIsEditPropertyListTypeOpen] =
+    useState(false);
 
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  const [isCreateAmenityOpen, setIsCreateAmenityOpen] = useState(false);
+  // const [isCreateAmenityOpen, setIsCreateAmenityOpen] = useState(false);
 
+  const [isCreatePropertyTypeOpen, setIsCreatePropertyTypeOpen] =
+    useState(false);
 
   useEffect(() => {
     const close = () => setMenu({ id: null, rect: null });
@@ -98,6 +127,64 @@ const AmenitiesManagementPage = () => {
     },
   });
 
+  //   const createPropertyTypeMutation = useMutation({
+  //     mutationFn: createNewPropertyType,
+  //     onSuccess: () => {
+  //       queryClient.invalidateQueries(["propertyTypes"]);
+  //       queryClient.invalidateQueries(["propertyTypeStats"]);
+  //       setIsCreatePropertyTypeOpen(false);
+  //     },
+  //   });
+
+  const createPropertyListTypeMutation = useMutation({
+    mutationFn: createPropertyListType,
+    onSuccess: (data) => {
+      console.log("This is the value of the data of the createPropertyListTypeMutation", data);
+      toast.success(data?.message || "Property List Type created successfully");
+      queryClient.invalidateQueries(["propertyListTypes"]);
+      queryClient.invalidateQueries(["propertyListTypeStats"]);
+      setIsCreatePropertyTypeOpen(false);
+    },
+    onError: (err) => {
+      toast.error(err?.message || "Failed to create Property Type ❌");
+    },
+  });
+
+  const updatePropertyTypeMutation = useMutation({
+    mutationFn: ({ id, payload }) => updateSinglePropertyListType(id, payload),
+    onSuccess: (data) => {
+      toast.success(data?.message || "Property List Type updated successfully");
+      queryClient.invalidateQueries(["propertyTypes"]);
+      queryClient.invalidateQueries(["propertyTypeStats"]);
+    },
+  });
+
+  const deletePropertyListTypeMutation = useMutation({
+    mutationFn: deleteSinglePropertyListType,
+    onSuccess: (data) => {
+      toast.success(data?.message || "Property List Type deleted successfully");
+      queryClient.invalidateQueries(["propertyListTypes"]);
+      queryClient.invalidateQueries(["propertyListTypeStats"]);
+      setDeleteModalOpen(false);
+      setDeletePropertyId(null);
+    },
+  });
+
+  // ---- PROPERTY TYPE STATS ----
+  //   const { data: propertyTypeStats, isLoading: propertyTypeStatsLoading } =
+  //     useQuery({
+  //       queryKey: ["propertyTypeStats"],
+  //       queryFn: getPropertyTypeStats,
+  //       staleTime: 30000,
+  //     });
+
+  // ---- ALL PROPERTY TYPES ----
+  //   const { data: propertyTypesResponse, isLoading: propertyTypesLoading } =
+  //     useQuery({
+  //       queryKey: ["propertyTypes"],
+  //       queryFn: () => getAllPropertyTypes(),
+  //     });
+
   const {
     data: amenitiesResponse,
     isLoading,
@@ -114,53 +201,48 @@ const AmenitiesManagementPage = () => {
     staleTime: 30000,
   });
 
+  // ---- ALL PROPERTY LIST TYPES ----
+  const {
+    data: propertyListTypesResponse,
+    isLoading: propertyListTypesLoading,
+  } = useQuery({
+    queryKey: ["propertyListTypes"],
+    queryFn: getAllPropertyListTypes, // Use your service function
+    staleTime: 30000,
+  });
+
+  console.log(
+    "This is the value of the propertyListTypesResponse",
+    propertyListTypesResponse,
+  );
+
   const updateAmenityMutation = useMutation({
     mutationFn: ({ id, payload }) => updateAmenity(id, payload),
-    onSuccess: (data) => {
+    onSuccess: () => {
       // Refresh table + stats after update
-      console.log("This is the value of the data of the updated Ammenities Management", data);
-      toast.success(data?.message || "Ammenity updated successfully");
       queryClient.invalidateQueries(["amenities"]);
       queryClient.invalidateQueries(["amenitiesStats"]);
     },
-    onError: (err) => {
-    toast.error(err?.message || "Failed to update Property Type");
+  });
+
+  const createAmenityMutation = useMutation({
+    mutationFn: createNewAmenity,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["amenities"]);
+      queryClient.invalidateQueries(["amenitiesStats"]);
+      setIsCreateAmenityOpen(false);
     },
   });
 
-
-  const createAmenityMutation = useMutation({
-  mutationFn: createNewAmenity,
-  onSuccess: (data) => {
-    console.log("This is the value of the data of the create Ammenities Management mutation", data);
-    toast.success(data?.message || "Ammenities created successfully ");
-    queryClient.invalidateQueries(["amenities"]);
-    queryClient.invalidateQueries(["amenitiesStats"]);
-    setIsCreateAmenityOpen(false);
-  },
-    onError: (err) => {
-      toast.error(err?.message || "Failed to create Property List Type");
+  const deleteAmenityMutation = useMutation({
+    mutationFn: deleteAmenity,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["amenities"]);
+      queryClient.invalidateQueries(["amenitiesStats"]);
+      setDeleteModalOpen(false);
+      setDeletePropertyId(null);
     },
-});
-
-
-const deleteAmenityMutation = useMutation({
-  mutationFn: deleteAmenity,
-  onSuccess: (data) => {
-    console.log("This is the value of the data of the delete Ammenities Management mutation", data);
-              toast.success(data?.message || "Property Type updated successfully");
-    queryClient.invalidateQueries(["amenities"]);
-    queryClient.invalidateQueries(["amenitiesStats"]);
-    setDeleteModalOpen(false);
-    setDeletePropertyId(null);
-  },
-      onError: (err) => {
-        console.log("This is the value of the err of the deleteAmenity", err);
-    toast.error(err?.response?.data?.message || "Failed to delete Property List Type");
-        setDeleteModalOpen(false);
-  },
-});
-
+  });
 
   useEffect(() => {
     loadAmenitiesStats();
@@ -200,30 +282,30 @@ const deleteAmenityMutation = useMutation({
     setPage(1); // Reset to first page when searching
   }, []);
 
-  const handleExport = async () => {
-    try {
-      const response = await exportProperties(searchQuery, statusFilter);
+  // const handleExport = async () => {
+  //   try {
+  //     const response = await exportProperties(searchQuery, statusFilter);
 
-      const blob = new Blob([response.data], {
-        type: "text/csv;charset=utf-8;",
-      });
+  //     const blob = new Blob([response.data], {
+  //       type: "text/csv;charset=utf-8;",
+  //     });
 
-      const url = window.URL.createObjectURL(blob);
+  //     const url = window.URL.createObjectURL(blob);
 
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "hotel_properties_export.csv";
+  //     const link = document.createElement("a");
+  //     link.href = url;
+  //     link.download = "hotel_properties_export.csv";
 
-      document.body.appendChild(link);
-      link.click();
+  //     document.body.appendChild(link);
+  //     link.click();
 
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Export error:", error);
-      alert("Failed to export properties");
-    }
-  };
+  //     link.remove();
+  //     window.URL.revokeObjectURL(url);
+  //   } catch (error) {
+  //     console.error("Export error:", error);
+  //     alert("Failed to export properties");
+  //   }
+  // };
 
   // Transform API response to match table structure
   // const transformPropertiesData = (properties) => {
@@ -281,17 +363,17 @@ const deleteAmenityMutation = useMutation({
 
   const amenities = amenitiesResponse?.success ? amenitiesResponse.data : [];
 
-  const pagination = amenitiesResponse?.pagination || {};
+  // const pagination = amenitiesResponse?.pagination || {};
 
-  const currentPage = pagination.page || page;
-  const pageSize = pagination.limit || limit;
-  const totalItems = pagination.total || 0;
+  // const currentPage = pagination.page || page;
+  // const pageSize = pagination.limit || limit;
+  // const totalItems = pagination.total || 0;
 
   // Find counts from propertiesByStatus array
   const getStatusCount = (statusName) => {
     if (!stats?.propertiesByStatus) return 0;
     const statusItem = stats.propertiesByStatus.find(
-      (item) => item._id === statusName
+      (item) => item._id === statusName,
     );
     return statusItem?.count || 0;
   };
@@ -304,6 +386,24 @@ const deleteAmenityMutation = useMutation({
     const rejected = getStatusCount("Rejected");
     return Math.max(0, total - pending - rejected);
   };
+
+  // ---- PROPERTY LIST TYPE STATS ----
+  const {
+    data: propertyListTypeStats,
+    isLoading: propertyListTypeStatsLoading,
+  } = useQuery({
+    queryKey: ["propertyListTypeStats"],
+    queryFn: getPropertyListTypeStats,
+    staleTime: 30000,
+  });
+
+  //   const propertyTypes = propertyTypesResponse?.success
+  //     ? propertyTypesResponse.data
+  //     : [];
+
+  const currentPage = 1;
+  const pageSize = 100; // or whatever default you want
+  const totalItems = propertyListTypeStats?.data?.totalListTypes || 0;
 
   // const hotelCards = [
   //   {
@@ -362,10 +462,76 @@ const deleteAmenityMutation = useMutation({
   //   // },
   // ];
 
+  // const hotelCards = [
+  //   {
+  //     title: "Total Amenities",
+  //     totalNumber: formatNumber(stats?.totalAmenities || 0),
+  //     borderColor: "border-[#E5E7EB]",
+  //     bgColor: "bg-white",
+  //     fontTitleColor: "text-[#4A5565]",
+  //     icon: LuHotel,
+  //     iconClass: "text-[#4A5565]",
+  //   },
+  //   {
+  //     title: "Active",
+  //     totalNumber: formatNumber(stats?.activeAmenities || 0),
+  //     borderColor: "border-[#B9F8CF]",
+  //     bgColor: "bg-gradient-to-bl from-[#F0FDF4] to-[#DCFCE7]",
+  //     fontTitleColor: "text-[#00A63E]",
+  //     icon: LuCheck,
+  //     iconClass: "text-[#00A63E]",
+  //   },
+  //   {
+  //     title: "Inactive",
+  //     totalNumber: formatNumber(stats?.inactiveAmenities || 0),
+  //     borderColor: "border-[#FFF085]",
+  //     bgColor: "bg-gradient-to-bl from-[#FEFCE8] to-[#FEF9C2]",
+  //     fontTitleColor: "text-[#A65F00]",
+  //     icon: LuClock,
+  //     iconClass: "text-[#A65F00]",
+  //   },
+  // ];
+
+  //   const hotelCards = [
+  //     {
+  //       title: "Total Property Types",
+  //       totalNumber: formatNumber(propertyListTypeStats?.totalPropertyTypes || 0),
+  //       borderColor: "border-[#E5E7EB]",
+  //       bgColor: "bg-white",
+  //       fontTitleColor: "text-[#4A5565]",
+  //       icon: LuHotel,
+  //       iconClass: "text-[#4A5565]",
+  //     },
+  //     {
+  //       title: "Active Types",
+  //       totalNumber: formatNumber(
+  //         propertyListTypeStats?.activePropertyTypes || 0,
+  //       ),
+  //       borderColor: "border-[#B9F8CF]",
+  //       bgColor: "bg-gradient-to-bl from-[#F0FDF4] to-[#DCFCE7]",
+  //       fontTitleColor: "text-[#00A63E]",
+  //       icon: LuCheck,
+  //       iconClass: "text-[#00A63E]",
+  //     },
+  //     {
+  //       title: "Inactive Types",
+  //       totalNumber: formatNumber(
+  //         propertyListTypeStats?.inactivePropertyTypes || 0,
+  //       ),
+  //       borderColor: "border-[#FFF085]",
+  //       bgColor: "bg-gradient-to-bl from-[#FEFCE8] to-[#FEF9C2]",
+  //       fontTitleColor: "text-[#A65F00]",
+  //       icon: LuClock,
+  //       iconClass: "text-[#A65F00]",
+  //     },
+  //   ];
+
   const hotelCards = [
     {
-      title: "Total Amenities",
-      totalNumber: formatNumber(stats?.totalAmenities || 0),
+      title: "Total List Types",
+      totalNumber: formatNumber(
+        propertyListTypeStats?.data?.totalListTypes || 0,
+      ),
       borderColor: "border-[#E5E7EB]",
       bgColor: "bg-white",
       fontTitleColor: "text-[#4A5565]",
@@ -373,8 +539,10 @@ const deleteAmenityMutation = useMutation({
       iconClass: "text-[#4A5565]",
     },
     {
-      title: "Active",
-      totalNumber: formatNumber(stats?.activeAmenities || 0),
+      title: "Active List Types",
+      totalNumber: formatNumber(
+        propertyListTypeStats?.data?.activeListTypes || 0,
+      ),
       borderColor: "border-[#B9F8CF]",
       bgColor: "bg-gradient-to-bl from-[#F0FDF4] to-[#DCFCE7]",
       fontTitleColor: "text-[#00A63E]",
@@ -382,8 +550,10 @@ const deleteAmenityMutation = useMutation({
       iconClass: "text-[#00A63E]",
     },
     {
-      title: "Inactive",
-      totalNumber: formatNumber(stats?.inactiveAmenities || 0),
+      title: "Inactive List Types",
+      totalNumber: formatNumber(
+        propertyListTypeStats?.data?.inactiveListTypes || 0,
+      ),
       borderColor: "border-[#FFF085]",
       bgColor: "bg-gradient-to-bl from-[#FEFCE8] to-[#FEF9C2]",
       fontTitleColor: "text-[#A65F00]",
@@ -617,21 +787,159 @@ const deleteAmenityMutation = useMutation({
   //     },
   //   ];
 
+  //   const columns = [
+  //     {
+  //       header: "Property Types",
+  //       accessor: "name",
+  //       render: (value) => (
+  //         <p className="font-poppins font-medium text-[14px]">{value}</p>
+  //       ),
+  //     },
+  //     {
+  //       header: "Name",
+  //       accessor: "category",
+  //       render: (value) => (
+  //         <span className="px-2 py-1 text-xs rounded bg-gray-100 capitalize">
+  //           {value}
+  //         </span>
+  //       ),
+  //     },
+  //     {
+  //       header: "Status",
+  //       accessor: "status",
+  //       render: (value) => (
+  //         <span
+  //           className={`px-2.5 py-1 text-xs rounded-full border ${
+  //             value === "Active"
+  //               ? "bg-green-100 text-green-700 border-green-200"
+  //               : "bg-red-100 text-red-700 border-red-200"
+  //           }`}
+  //         >
+  //           {value}
+  //         </span>
+  //       ),
+  //     },
+  //     {
+  //       header: "Created",
+  //       accessor: "createdAt",
+  //     },
+  //     {
+  //       header: "Actions",
+  //       accessor: "actions",
+  //       render: (_, row) => (
+  //         <div className="flex items-center gap-3">
+  //           <button
+  //             className="hover:text-blue-600"
+  //             onClick={() => {
+  //               setEditAmenity(row);
+  //               setIsEditAmenityOpen(true);
+  //             }}
+  //           >
+  //             <FaRegEdit size={16} />
+  //           </button>
+
+  //    <button
+  //   className="hover:text-red-600"
+  //   onClick={() => {
+  //     setDeletePropertyId(row._id);
+  //     setDeleteModalOpen(true);
+  //   }}
+  // >
+  //   <MdDelete size={18} />
+  // </button>
+  //         </div>
+  //       ),
+  //     },
+  //   ];
+
+  //   const columns = [
+  //     {
+  //       header: "Property Type",
+  //       accessor: "name",
+  //       render: (value, row) => (
+  //         <div className="flex items-center gap-2">
+  //           <span className="text-lg">{row.icon}</span>
+  //           <p className="font-poppins font-medium text-[14px]">{value}</p>
+  //         </div>
+  //       ),
+  //     },
+  //     {
+  //       header: "Description",
+  //       accessor: "description",
+  //       render: (value) => (
+  //         <p className="text-sm text-gray-600 line-clamp-2">{value || "—"}</p>
+  //       ),
+  //     },
+  //     {
+  //       header: "Status",
+  //       accessor: "status",
+  //       render: (value) => (
+  //         <span
+  //           className={`px-2.5 py-1 text-xs rounded-full border ${
+  //             value === "Active"
+  //               ? "bg-green-100 text-green-700 border-green-200"
+  //               : "bg-red-100 text-red-700 border-red-200"
+  //           }`}
+  //         >
+  //           {value}
+  //         </span>
+  //       ),
+  //     },
+  //     {
+  //       header: "Created",
+  //       accessor: "createdAt",
+  //     },
+  //     {
+  //       header: "Actions",
+  //       accessor: "actions",
+  //       render: (_, row) => (
+  //         <div className="flex items-center gap-3">
+  //           <button
+  //             className="hover:text-blue-600 cursor-pointer"
+  //             onClick={() => {
+  //               setEditPropertyType(row);
+  //               setIsEditPropertyTypeOpen(true);
+  //             }}
+  //           >
+  //             <FaRegEdit size={16} />
+  //           </button>
+
+  //           <button
+  //             className="hover:text-red-600 cursor-pointer"
+  //             onClick={() => {
+  //               setDeletePropertyId(row._id);
+  //               setDeleteModalOpen(true);
+  //             }}
+  //           >
+  //             <MdDelete size={18} />
+  //           </button>
+  //         </div>
+  //       ),
+  //     },
+  //   ];
+
   const columns = [
     {
-      header: "Amenity Name",
+      header: "Property Type",
       accessor: "name",
       render: (value) => (
         <p className="font-poppins font-medium text-[14px]">{value}</p>
       ),
     },
     {
-      header: "Category",
-      accessor: "category",
+      header: "Property List Type",
+      accessor: "propertyListTypeName",
       render: (value) => (
-        <span className="px-2 py-1 text-xs rounded bg-gray-100 capitalize">
-          {value}
-        </span>
+        <p className="font-poppins font-medium text-[14px]">{value}</p>
+      ),
+    },
+    {
+      header: "Description",
+      accessor: "description",
+      render: (value) => (
+        <p className="text-sm text-gray-600 line-clamp-2">{value?.split(" ").length > 5
+    ? value.split(" ").slice(0, 5).join(" ") + "..."
+    : value}</p>
       ),
     },
     {
@@ -659,24 +967,25 @@ const deleteAmenityMutation = useMutation({
       render: (_, row) => (
         <div className="flex items-center gap-3">
           <button
-            className="hover:text-blue-600"
+            className="hover:text-blue-600 cursor-pointer"
             onClick={() => {
-              setEditAmenity(row);
-              setIsEditAmenityOpen(true);
+              console.log("This is the value of the row of the edit btn", row);
+              setEditPropertyListType(row);
+              setIsEditPropertyListTypeOpen(true);
             }}
           >
             <FaRegEdit size={16} />
           </button>
 
-   <button
-  className="hover:text-red-600"
-  onClick={() => {
-    setDeletePropertyId(row._id);
-    setDeleteModalOpen(true);
-  }}
->
-  <MdDelete size={18} />
-</button>
+          <button
+            className="hover:text-red-600 cursor-pointer"
+            onClick={() => {
+              setDeletePropertyId(row._id);
+              setDeleteModalOpen(true);
+            }}
+          >
+            <MdDelete size={18} />
+          </button>
         </div>
       ),
     },
@@ -687,15 +996,57 @@ const deleteAmenityMutation = useMutation({
   //   ? transformPropertiesData(propertiesData.data)
   //   : [];
 
-  const data = amenities.map((item) => ({
-    _id: item._id,
-    name: item.name,
-    category: item.category,
-    status: item.isActive ? "Active" : "Inactive",
-    createdAt: item.createdAt
-      ? new Date(item.createdAt).toLocaleDateString()
-      : "—",
-  }));
+  // const data = amenities.map((item) => ({
+  //   _id: item._id,
+  //   name: item.name,
+  //   category: item.category,
+  //   status: item.isActive ? "Active" : "Inactive",
+  //   createdAt: item.createdAt
+  //     ? new Date(item.createdAt).toLocaleDateString()
+  //     : "—",
+  // }));
+
+  //   const data = propertyTypes.map((item) => ({
+  //     _id: item._id,
+  //     name: item.name,
+  //     description: item.description,
+  //     // icon: item.icon || "🏨",
+  //     status: item.isActive ? "Active" : "Inactive",
+  //     createdAt: item.createdAt
+  //       ? new Date(item.createdAt).toLocaleDateString()
+  //       : "—",
+  //   }));
+
+  // const data = propertyListTypesResponse?.success
+  //   ? propertyListTypesResponse.data.map((item) => ({
+  //       _id: item._id,
+  //       name: item.propertyTypeName,
+  //       propertyListTypeName : item.PropertyListTypeName,
+  //       description: item.description || "—",
+  //       status: item.isActive ? "Active" : "Inactive",
+  //       createdAt: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "—",
+  //     }))
+  //   : [];
+
+  const data = propertyListTypesResponse?.success
+    ? propertyListTypesResponse.data.map((item) => ({
+        _id: item._id,
+        icon: item.icon,
+        // ✅ MOST IMPORTANT FIX:
+        propertyTypeId: item.propertyTypeId?._id,
+
+        name: item.propertyTypeName,
+        propertyListTypeName: item.PropertyListTypeName,
+        description: item.description || "—",
+        isActive: item.isActive,
+        status: item.isActive ? "Active" : "Inactive",
+        createdAt: item.createdAt
+          ? new Date(item.createdAt).toLocaleDateString()
+          : "—",
+      }))
+    : [];
+
+  console.log("This is the value of the data", data);
 
   // Get total items from pagination
   //   // Use stats total if available (more reliable), otherwise use pagination total
@@ -708,30 +1059,38 @@ const deleteAmenityMutation = useMutation({
   // if (error)
   //   return <div className="p-5">Error loading properties: {error.message}</div>;
 
-  if (isLoading || statsLoading) return <Loader />;
+  // if (isLoading || statsLoading) return <Loader />;
 
-  if (error) {
-    return <div className="p-6 text-red-600">Failed to load amenities</div>;
+  if (propertyListTypesLoading || propertyListTypeStatsLoading)
+    return <Loader />;
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="p-6 text-gray-500">No property list types found.</div>
+    );
   }
 
   return (
     <>
       <div className="p-6">
+        {console.log(
+          "This is the value of the editPropertyListType",
+          editPropertyListType,
+        )}
         <PageHeading
-          title={"Amenities Management"}
-          subTitle={"Manage all room and properties amenities"}
+          title={"Properties List Types Management"}
+          subTitle={"Manage all the Properties Types"}
         />
       </div>
 
       <div className="p-6 flex justify-end">
-  <button
-    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex gap-3 items-center"
-    onClick={() => setIsCreateAmenityOpen(true)}
-  >
-    <IoAddOutline className="text-white" /> Create Amenity
-  </button>
-</div>
-
+        <button
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex gap-3 items-center cursor-pointer"
+          onClick={() => setIsCreatePropertyTypeOpen(true)}
+        >
+          <IoAddOutline className="text-white" /> Create Property List Type
+        </button>
+      </div>
 
       <div className="flex gap-4 pt-8">
         {hotelCards.map((item) => (
@@ -793,60 +1152,56 @@ const deleteAmenityMutation = useMutation({
           propertyId={editPropertyId}
         />
 
-  {deleteModalOpen &&
-  createPortal(
-    <ConfirmAmenityDelete
-      amenityId={deletePropertyId}
-      isDeleting={deleteAmenityMutation.isLoading}
-      onCancel={() => {
-        setDeleteModalOpen(false);
-        setDeletePropertyId(null);
-      }}
-      onConfirm={() => {
-        deleteAmenityMutation.mutate(deletePropertyId);
-      }}
-    />,
-    document.body
-  )}
-
+        {deleteModalOpen &&
+          createPortal(
+            <ConfirmDeletePropertyListType
+              propertyListTypeId={deletePropertyId}
+              isDeleting={deletePropertyListTypeMutation.isLoading}
+              onCancel={() => {
+                setDeleteModalOpen(false);
+                setDeletePropertyId(null);
+              }}
+              onConfirm={() => {
+                deletePropertyListTypeMutation.mutate(deletePropertyId);
+              }}
+            />,
+            document.body,
+          )}
       </div>
 
-      {isEditAmenityOpen && (
-        <UpdateAmenityForm
-          amenity={editAmenity}
-          isSaving={updateAmenityMutation.isLoading}
+      {isEditPropertyListTypeOpen && (
+        <UpdatePropertyListTypeForm
+          propertyListType={editPropertyListType}
+          isSaving={updatePropertyTypeMutation.isLoading}
           onClose={() => {
-            setIsEditAmenityOpen(false);
-            setEditAmenity(null);
+            setIsEditPropertyListTypeOpen(false);
+            setEditPropertyListType(null);
           }}
           onSave={(id, payload) => {
-            updateAmenityMutation.mutate(
+            updatePropertyTypeMutation.mutate(
               { id, payload },
               {
                 onSuccess: () => {
-                  setIsEditAmenityOpen(false);
-                  setEditAmenity(null);
+                  setIsEditPropertyListTypeOpen(false);
+                  setEditPropertyListType(null);
                 },
-              }
+              },
             );
           }}
         />
       )}
 
-
-
-      {isCreateAmenityOpen && (
-  <CreateAmenityForm
-    isSaving={createAmenityMutation.isLoading}
-    onClose={() => setIsCreateAmenityOpen(false)}
-    onSave={(payload) => {
-      createAmenityMutation.mutate(payload);
-    }}
-  />
-)}
-
+      {isCreatePropertyTypeOpen && (
+        <CreatePropertyListTypeForm
+          isSaving={createPropertyListTypeMutation.isLoading}
+          onClose={() => setIsCreatePropertyTypeOpen(false)}
+          onSave={(payload) => {
+            createPropertyListTypeMutation.mutate(payload);
+          }}
+        />
+      )}
     </>
   );
 };
 
-export default AmenitiesManagementPage;
+export default PropertiesListTypeManagementPage;
