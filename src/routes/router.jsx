@@ -20,6 +20,9 @@ import AmenitiesManagementLayout from "../layouts/AmenitiesManagementLayout";
 import PropertyManagementLayout from "../layouts/PropertyManagementLayout";
 import PropertyListTypeManagementLayout from "../layouts/PropertyListTypeManagementLayout";
 
+
+const BASE_PATH = "/admin";  
+
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -42,59 +45,62 @@ const router = createBrowserRouter([
         element: <DashboardLayout />,
       },
       {
-        path: "/guests-management",
+        path: "guests-management",
         element: <GuestsManagementLayout />
       },
       {
-        path: "/hotel-management",
+        path: "hotel-management",
         element: <HotalManagementLayout />
       },
       {
-        path: "/master-management/property",
+        path: "master-management/property",
         element: <PropertyManagementLayout />
       },
       {
-        path: "/master-management/property-list",
+        path: "master-management/property-list",
         element: <PropertyListTypeManagementLayout />
       },
       {
-        path: "/master-management/amenities",
+        path: "master-management/amenities",
         element: <AmenitiesManagementLayout />
       },
       {
-        path: "/verification",
+        path: "verification",
         element: <VerificationLayout />
       },
       {
-        path: "/booking-management",
+        path: "booking-management",
         element: <BookingManagementLayout />
       },
       {
-        path: "/content-management",
+        path: "content-management",
         element: <ContentManagementLayout />
       },
       {
-        path: "/finacial-management",
+        path: "finacial-management",
         element: <FinacialLayout />
       },
       {
-        path: "/analytics-report",
+        path: "analytics-report",
         element: <AnalyticsLayout />
       },
       {
-        path: "/system-configuration",
+        path: "system-configuration",
         element: <SystemConfigLayout />
       },
       {
-        path: "/customer-support",
+        path: "customer-support",
         element: <CustomerSupportLayout />
       },
       {
-        path: "/staff-management",
+        path: "staff-management",
         element: <StaffManagementLayout />
       }
     ],
+    
   },
-]);
+],  {
+    basename: BASE_PATH, // Very important for Hostinger
+  });
 
 export default router;

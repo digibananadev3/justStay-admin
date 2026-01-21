@@ -1,8 +1,8 @@
 import axios from "axios";
 
 // const UPLOAD_BASE_URL = "http://13.203.230.175:4000/api";
-// const UPLOAD_BASE_URL = "https://qwiz15.in/api";
-const UPLOAD_BASE_URL = "http://localhost:3000/api";
+const UPLOAD_BASE_URL = "https://qwiz15.in/api";
+// const UPLOAD_BASE_URL = "http://localhost:3000/api";
 
 
 // Upload files (photos or documents)

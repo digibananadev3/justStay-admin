@@ -20,44 +20,44 @@ const Login = () => {
     e.preventDefault();
     setError('');
     
-    console.log('🟢 [LOGIN] handlePhoneSubmit called with phone:', phone);
+    // console.log('🟢 [LOGIN] handlePhoneSubmit called with phone:', phone);
     
     // Validate phone number (10 digits)
     if (!phone || phone.length !== 10 || !/^\d+$/.test(phone)) {
-      console.log('❌ [LOGIN] Phone validation failed:', phone);
+      // console.log('❌ [LOGIN] Phone validation failed:', phone);
       setError('Please enter a valid 10-digit phone number');
       return;
     }
 
-    console.log('🟢 [LOGIN] Phone validation passed, calling API...');
+    // console.log('🟢 [LOGIN] Phone validation passed, calling API...');
     setLoading(true);
     try {
-      console.log('🟢 [LOGIN] Calling handleLogin with phone:', phone);
+      // console.log('🟢 [LOGIN] Calling handleLogin with phone:', phone);
       const response = await handleLogin(phone);
-      console.log('✅ [LOGIN] API response received:', response);
+      // console.log('✅ [LOGIN] API response received:', response);
       
       if (response && response.user) {
-        console.log('✅ [LOGIN] Response has user data:', response.user);
-        console.log('✅ [LOGIN] OTP received:', response.user.otp);
+        // console.log('✅ [LOGIN] Response has user data:', response.user);
+        // console.log('✅ [LOGIN] OTP received:', response.user.otp);
         setReceivedOtp(response.user.otp);
         setUserData(response.user);
         setStep(2);
       } else {
-        console.log('❌ [LOGIN] Response missing user data:', response);
+        // console.log('❌ [LOGIN] Response missing user data:', response);
         setError(response?.message || 'Failed to send OTP');
       }
     } catch (err) {
-      console.error('❌ [LOGIN] Error caught in handlePhoneSubmit:', err);
-      console.error('❌ [LOGIN] Error response:', err?.response);
-      console.error('❌ [LOGIN] Error response data:', err?.response?.data);
-      console.error('❌ [LOGIN] Error message:', err?.message);
-      console.error('❌ [LOGIN] Full error object:', JSON.stringify(err, null, 2));
+      // console.error('❌ [LOGIN] Error caught in handlePhoneSubmit:', err);
+      // console.error('❌ [LOGIN] Error response:', err?.response);
+      // console.error('❌ [LOGIN] Error response data:', err?.response?.data);
+      // console.error('❌ [LOGIN] Error message:', err?.message);
+      // console.error('❌ [LOGIN] Full error object:', JSON.stringify(err, null, 2));
       
       const errorMessage = err?.response?.data?.message || err?.message || 'Failed to send OTP. Please try again.';
-      console.log('❌ [LOGIN] Setting error message:', errorMessage);
+      // console.log('❌ [LOGIN] Setting error message:', errorMessage);
       setError(errorMessage);
     } finally {
-      console.log('🟢 [LOGIN] Finally block - setting loading to false');
+      // console.log('🟢 [LOGIN] Finally block - setting loading to false');
       setLoading(false);
     }
   };
@@ -66,24 +66,24 @@ const Login = () => {
     e.preventDefault();
     setError('');
 
-    console.log('🟢 [LOGIN] handleOtpSubmit called with otp:', otp);
+    // console.log('🟢 [LOGIN] handleOtpSubmit called with otp:', otp);
 
     if (!otp || otp.length !== 4) {
-      console.log('❌ [LOGIN] OTP validation failed:', otp);
+      // console.log('❌ [LOGIN] OTP validation failed:', otp);
       setError('Please enter a valid 4-digit OTP');
       return;
     }
 
     setVerifyingOtp(true);
     try {
-      console.log('🟢 [LOGIN] Calling handleVerifyOtp with phone:', phone, 'otp:', otp);
+      // console.log('🟢 [LOGIN] Calling handleVerifyOtp with phone:', phone, 'otp:', otp);
       const response = await handleVerifyOtp(phone, otp);
-      console.log('✅ [LOGIN] Verify OTP response received:', response);
+      // console.log('✅ [LOGIN] Verify OTP response received:', response);
 
       // Check if response has data and status is success
       if (response?.data?.status === 'success' && response?.data?.user) {
-        console.log('✅ [LOGIN] OTP verified successfully');
-        console.log('✅ [LOGIN] User data:', response.data.user);
+        // console.log('✅ [LOGIN] OTP verified successfully');
+        // console.log('✅ [LOGIN] User data:', response.data.user);
         
         // Login successful - dispatch user data
         dispatch(login({ 
@@ -93,24 +93,24 @@ const Login = () => {
         }));
         
         // Navigate to dashboard
-        console.log('✅ [LOGIN] Navigating to dashboard');
+        // console.log('✅ [LOGIN] Navigating to dashboard');
         navigate('/');
       } else {
-        console.log('❌ [LOGIN] Invalid response structure:', response);
+        // console.log('❌ [LOGIN] Invalid response structure:', response);
         setError(response?.data?.message || 'OTP verification failed');
       }
     } catch (err) {
-      console.error('❌ [LOGIN] Error caught in handleOtpSubmit:', err);
-      console.error('❌ [LOGIN] Error response:', err?.response);
-      console.error('❌ [LOGIN] Error response data:', err?.response?.data);
-      console.error('❌ [LOGIN] Error message:', err?.message);
-      console.error('❌ [LOGIN] Full error object:', JSON.stringify(err, null, 2));
+      // console.error('❌ [LOGIN] Error caught in handleOtpSubmit:', err);
+      // console.error('❌ [LOGIN] Error response:', err?.response);
+      // console.error('❌ [LOGIN] Error response data:', err?.response?.data);
+      // console.error('❌ [LOGIN] Error message:', err?.message);
+      // console.error('❌ [LOGIN] Full error object:', JSON.stringify(err, null, 2));
       
       const errorMessage = err?.response?.data?.message || err?.response?.data?.data?.message || err?.message || 'Invalid OTP. Please try again.';
-      console.log('❌ [LOGIN] Setting error message:', errorMessage);
+      // console.log('❌ [LOGIN] Setting error message:', errorMessage);
       setError(errorMessage);
     } finally {
-      console.log('🟢 [LOGIN] Finally block - setting verifyingOtp to false');
+      // console.log('🟢 [LOGIN] Finally block - setting verifyingOtp to false');
       setVerifyingOtp(false);
     }
   };

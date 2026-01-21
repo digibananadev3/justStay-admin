@@ -170,21 +170,53 @@ export const uploadPropertyDocuments = async (propertyId, documents) => {
 
 
 
+// export const updatePropertyDocument = async (
+//   propertyId,
+//   documentId,
+//   payload   // <-- changed from "documents"
+// ) => {
+//   if (!propertyId) {
+//     throw new Error("Property ID is required");
+//   }
+
+//   if (!documentId) {
+//     throw new Error("Document ID is required");
+//   }
+
+//   if (!payload || typeof payload !== "object") {
+//     throw new Error("Payload must be an object");
+//   }
+
+//   const { data } = await apiClient.put(
+//     `/properties/${propertyId}/documents/${documentId}`,
+//     payload
+//   );
+
+//   return data;
+// };
+
+
+
 export const updatePropertyDocument = async (
   propertyId,
   documentId,
-  payload   // <-- changed from "documents"
+  payload
 ) => {
-  if (!propertyId) {
-    throw new Error("Property ID is required");
+  if (!propertyId) throw new Error("Property ID is required");
+  if (!documentId) throw new Error("Document ID is required");
+  if (!payload || typeof payload !== "object") throw new Error("Payload must be an object");
+
+  // 🔐 Enforce remark rules before API call
+  if (
+    (payload.status === "Verified" || payload.status === "Rejected") &&
+    (!payload.remark || payload.remark.trim() === "")
+  ) {
+    throw new Error(`Remark is required when status is ${payload.status}`);
   }
 
-  if (!documentId) {
-    throw new Error("Document ID is required");
-  }
-
-  if (!payload || typeof payload !== "object") {
-    throw new Error("Payload must be an object");
+  // 🧹 Do not send remark when Pending
+  if (payload.status === "Pending") {
+    delete payload.remark;
   }
 
   const { data } = await apiClient.put(
@@ -194,6 +226,7 @@ export const updatePropertyDocument = async (
 
   return data;
 };
+
 
 
 
@@ -268,7 +301,6 @@ export const removeAmmenitiesInProperty = async (propertyId, amenities) => {
 
     return data;
   } catch (error) {
-    console.error("Error removing amenities:", error.response?.data || error);
     throw error;
   }
 };

@@ -99,7 +99,6 @@ const EditHotelDrawer = ({ isOpen, setIsOpen, propertyId }) => {
 resetForm();
       setIsOpen(false);
     } catch (err) {
-      console.error("Update failed:", err);
       toast.error("Update failed");
     } finally {
       setLoading(false);

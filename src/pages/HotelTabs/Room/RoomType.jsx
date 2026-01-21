@@ -43,7 +43,6 @@ const handleDeleteRoom = async () => {
     // Refresh list
     queryClient.invalidateQueries(["propertyRooms"]);
   } catch (error) {
-    console.error(error);
     toast.error("Failed to delete room");
   } finally {
     setIsDeleting(false);

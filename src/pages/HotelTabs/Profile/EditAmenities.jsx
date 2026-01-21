@@ -129,7 +129,7 @@ const EditAmenities = ({
         </div>
 
         {/* Body */}
-        <div className="p-6 space-y-6 overflow-hidden flex-1">
+        <div className="p-6 space-y-6  overflow-y-auto flex-1">
           {/* Selected Amenities */}
           <div>
             <p className="text-sm font-medium text-gray-700 mb-2">

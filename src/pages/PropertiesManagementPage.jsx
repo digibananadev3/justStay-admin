@@ -161,7 +161,7 @@ const PropertiesManagementPage = () => {
   const { data: propertyTypesResponse, isLoading: propertyTypesLoading } =
     useQuery({
       queryKey: ["propertyTypes"],
-      queryFn: () => getAllPropertyTypes(),
+      queryFn: () => getAllPropertyTypes(true),
     });
 
   const {
@@ -266,7 +266,6 @@ const PropertiesManagementPage = () => {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Export error:", error);
       alert("Failed to export properties");
     }
   };

@@ -118,7 +118,6 @@ const AmenitiesManagementPage = () => {
     mutationFn: ({ id, payload }) => updateAmenity(id, payload),
     onSuccess: (data) => {
       // Refresh table + stats after update
-      console.log("This is the value of the data of the updated Ammenities Management", data);
       toast.success(data?.message || "Ammenity updated successfully");
       queryClient.invalidateQueries(["amenities"]);
       queryClient.invalidateQueries(["amenitiesStats"]);
@@ -132,7 +131,6 @@ const AmenitiesManagementPage = () => {
   const createAmenityMutation = useMutation({
   mutationFn: createNewAmenity,
   onSuccess: (data) => {
-    console.log("This is the value of the data of the create Ammenities Management mutation", data);
     toast.success(data?.message || "Ammenities created successfully ");
     queryClient.invalidateQueries(["amenities"]);
     queryClient.invalidateQueries(["amenitiesStats"]);
@@ -147,7 +145,6 @@ const AmenitiesManagementPage = () => {
 const deleteAmenityMutation = useMutation({
   mutationFn: deleteAmenity,
   onSuccess: (data) => {
-    console.log("This is the value of the data of the delete Ammenities Management mutation", data);
               toast.success(data?.message || "Property Type updated successfully");
     queryClient.invalidateQueries(["amenities"]);
     queryClient.invalidateQueries(["amenitiesStats"]);
@@ -155,7 +152,6 @@ const deleteAmenityMutation = useMutation({
     setDeletePropertyId(null);
   },
       onError: (err) => {
-        console.log("This is the value of the err of the deleteAmenity", err);
     toast.error(err?.response?.data?.message || "Failed to delete Property List Type");
         setDeleteModalOpen(false);
   },
@@ -220,7 +216,6 @@ const deleteAmenityMutation = useMutation({
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Export error:", error);
       alert("Failed to export properties");
     }
   };

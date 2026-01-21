@@ -1,7 +1,7 @@
 import { CiEdit } from "react-icons/ci";
 
 const Container = ({ title, children, onEditAmenities, onEditHotelMedia }) => {
-  const isAmenities = title === "Amenities Management";
+  const isAmenities = title === "Property Amenities Management";
   const isHotel = title === "Hotel Images"
   return (
     <div className="border rounded-2xl border-[#E5E7EB] p-4 mb-4">

@@ -70,7 +70,6 @@ const reloadProperty = async () => {
     
     toast.success("Amenities updated successfully");
   } catch (err) {
-    console.error("Reload property error:", err);
     toast.error("Failed to refresh property");
   }
 };
@@ -144,7 +143,7 @@ const reloadProperty = async () => {
       </div>
       <div>
         <Container
-          title={"Amenities Management"}
+          title={"Property Amenities Management"}
           onEditAmenities={() => setOpenEdit(true)}
         >
           <AmenitiesManagement

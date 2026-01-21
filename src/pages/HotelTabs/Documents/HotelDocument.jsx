@@ -70,7 +70,6 @@ const [isDeleting, setIsDeleting] = useState(false);
           toast.success("Documents uploaded successfully!");
     },
     onError: (error) => {
-      console.error("Upload error:", error);
       // alert(`Upload failed: ${error.message || "Unknown error"}`);
       toast.error(`Upload failed: ${error.message || "Unknown error"}`);
     },
@@ -127,7 +126,6 @@ const handleConfirmDelete = async () => {
     refreshData();
     setDocToDelete(null); // close modal
   } catch (error) {
-    console.error(error);
     toast.error("Failed to delete document");
   } finally {
     setIsDeleting(false);

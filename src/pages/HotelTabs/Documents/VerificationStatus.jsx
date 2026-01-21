@@ -67,6 +67,24 @@ const VerificationStatus = ({
                     Uploaded: {item.uploaded}
                     {item.expires && <> • Expires: {item.expires}</>}
                   </p>
+
+             
+       {/* -------- Improved Remark UI -------- */}
+{item?.originalDoc?.remark && (
+  <div
+    className="mt-2 bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-700 max-w-[320px]"
+    title={item.originalDoc.remark} // full remark on hover
+  >
+    <span className="inline-block mb-1 rounded text-md font-semibold text-black">
+      Remark
+    </span>
+    <p className="leading-relaxed text-md">
+      {item.originalDoc.remark.split(" ").slice(0, 20).join(" ")}
+      {item.originalDoc.remark.split(" ").length > 20 ? "..." : ""}
+    </p>
+  </div>
+)}
+
                 </div>
               </div>
 

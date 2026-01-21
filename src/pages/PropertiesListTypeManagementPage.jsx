@@ -139,7 +139,6 @@ const PropertiesListTypeManagementPage = () => {
   const createPropertyListTypeMutation = useMutation({
     mutationFn: createPropertyListType,
     onSuccess: (data) => {
-      console.log("This is the value of the data of the createPropertyListTypeMutation", data);
       toast.success(data?.message || "Property List Type created successfully");
       queryClient.invalidateQueries(["propertyListTypes"]);
       queryClient.invalidateQueries(["propertyListTypeStats"]);
@@ -211,10 +210,6 @@ const PropertiesListTypeManagementPage = () => {
     staleTime: 30000,
   });
 
-  console.log(
-    "This is the value of the propertyListTypesResponse",
-    propertyListTypesResponse,
-  );
 
   const updateAmenityMutation = useMutation({
     mutationFn: ({ id, payload }) => updateAmenity(id, payload),
@@ -969,7 +964,6 @@ const PropertiesListTypeManagementPage = () => {
           <button
             className="hover:text-blue-600 cursor-pointer"
             onClick={() => {
-              console.log("This is the value of the row of the edit btn", row);
               setEditPropertyListType(row);
               setIsEditPropertyListTypeOpen(true);
             }}
@@ -1046,7 +1040,6 @@ const PropertiesListTypeManagementPage = () => {
       }))
     : [];
 
-  console.log("This is the value of the data", data);
 
   // Get total items from pagination
   //   // Use stats total if available (more reliable), otherwise use pagination total
@@ -1073,10 +1066,6 @@ const PropertiesListTypeManagementPage = () => {
   return (
     <>
       <div className="p-6">
-        {console.log(
-          "This is the value of the editPropertyListType",
-          editPropertyListType,
-        )}
         <PageHeading
           title={"Properties List Types Management"}
           subTitle={"Manage all the Properties Types"}

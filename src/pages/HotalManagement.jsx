@@ -136,7 +136,6 @@ const HotalManagement = () => {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Export error:", error);
       alert("Failed to export properties");
     }
   };

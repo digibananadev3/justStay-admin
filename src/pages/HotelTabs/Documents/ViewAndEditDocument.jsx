@@ -5,6 +5,7 @@ import { updatePropertyDocument } from "../../../services/properties";
 
 const ViewAndEditDocument = ({ doc, propertyId, onClose, onUpdated }) => {
   const [status, setStatus] = useState(doc.status || "Pending");
+  const [remark, setRemark] = useState(doc.remark || "");
   const [previewUrl, setPreviewUrl] = useState(doc.documentUrl);
   const [newFile, setNewFile] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -12,32 +13,40 @@ const ViewAndEditDocument = ({ doc, propertyId, onClose, onUpdated }) => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     setNewFile(file);
-    setPreviewUrl(URL.createObjectURL(file)); // instant preview
+    setPreviewUrl(URL.createObjectURL(file));
   };
 
   const handleSave = async () => {
     try {
+      // 🔐 Frontend validation
+      if ((status === "Verified" || status === "Rejected") && !remark.trim()) {
+        toast.error("Remark is required for Verified or Rejected documents");
+        return;
+      }
+
       setIsSaving(true);
 
       let finalUrl = doc.documentUrl;
 
       if (newFile) {
         const uploadRes = await uploadFiles([newFile], "document");
-
         if (!uploadRes.urls?.length) {
           throw new Error("File upload failed");
         }
-
         finalUrl = uploadRes.urls[0].url;
       }
 
       const payload = {
         documentType: doc.documentType,
-        status: status,
+        status,
         documentUrl: finalUrl,
       };
+
+      // Send remark only when needed
+      if (status === "Verified" || status === "Rejected") {
+        payload.remark = remark.trim();
+      }
 
       await updatePropertyDocument(propertyId, doc._id, payload);
 
@@ -45,7 +54,6 @@ const ViewAndEditDocument = ({ doc, propertyId, onClose, onUpdated }) => {
       onUpdated();
       onClose();
     } catch (error) {
-      console.error(error);
       toast.error(error.message || "Update failed");
     } finally {
       setIsSaving(false);
@@ -56,33 +64,24 @@ const ViewAndEditDocument = ({ doc, propertyId, onClose, onUpdated }) => {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white p-5 rounded-lg w-[500px] shadow-lg">
+      <div className="bg-white p-5 rounded-lg w-[500px] shadow-lg max-h-[80vh] overflow-y-scroll">
         <h2 className="text-lg font-semibold mb-3">
           View & Edit {doc.documentType}
         </h2>
 
-        {/* Main Preview */}
+        {/* Preview */}
         <div className="border p-3 rounded mb-3 text-center">
           {isImage ? (
-            <img
-              src={previewUrl}
-              alt="document"
-              className="max-h-[250px] mx-auto"
-            />
+            <img src={previewUrl} alt="document" className="max-h-[250px] mx-auto" />
           ) : (
-            <a
-              href={previewUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline"
-            >
+            <a href={previewUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
               View Document
             </a>
           )}
         </div>
 
-        {/* ===== BETTER FILE UPLOAD UI (ONLY UI CHANGED) ===== */}
-        <div className="border border-dashed border-gray-300 rounded-lg p-4 mb-3 text-center bg-gray-50 hover:bg-gray-100 transition">
+        {/* Upload */}
+        <div className="border border-dashed border-gray-300 rounded-lg p-4 mb-3 text-center bg-gray-50">
           <label className="cursor-pointer block">
             <input
               type="file"
@@ -90,37 +89,19 @@ const ViewAndEditDocument = ({ doc, propertyId, onClose, onUpdated }) => {
               onChange={handleFileChange}
               className="hidden"
             />
-
-            {/* Small preview inside upload box when image is selected */}
-            {newFile && previewUrl?.match(/\.(jpg|jpeg|png|webp)$/i) ? (
-              <img
-                src={previewUrl}
-                alt="selected preview"
-                className="mx-auto mb-2 h-20 object-contain"
-              />
-            ) : null}
-
-            <div className="text-teal-600 font-medium">
-              Click to replace document
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
-              JPG, PNG, PDF, DOC, DOCX allowed
-            </p>
+            <div className="text-teal-600 font-medium">Click to replace document</div>
+            <p className="text-xs text-gray-500 mt-1">JPG, PNG, PDF, DOC, DOCX allowed</p>
           </label>
         </div>
 
-        {/* Show selected file name */}
-        {newFile && (
-          <div className="mb-3 p-2 bg-gray-100 rounded text-sm text-gray-600">
-            📄 Selected file:{" "}
-            <span className="font-medium">{newFile.name}</span>
-          </div>
-        )}
-
-        {/* Change status */}
+        {/* Status */}
         <select
           value={status}
-          onChange={(e) => setStatus(e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value;
+            setStatus(val);
+            if (val === "Pending") setRemark(""); // auto-clear
+          }}
           className="border p-2 rounded w-full mb-3"
         >
           <option value="Pending">Pending</option>
@@ -128,12 +109,19 @@ const ViewAndEditDocument = ({ doc, propertyId, onClose, onUpdated }) => {
           <option value="Rejected">Rejected</option>
         </select>
 
+        {/* Remark input (only when needed) */}
+        {(status === "Verified" || status === "Rejected") && (
+          <textarea
+            value={remark}
+            onChange={(e) => setRemark(e.target.value)}
+            placeholder={`Enter remark for ${status}`}
+            className="border p-2 rounded w-full mb-3"
+            rows={3}
+          />
+        )}
+
         <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="px-3 py-2 border rounded"
-            disabled={isSaving}
-          >
+          <button onClick={onClose} className="px-3 py-2 border rounded" disabled={isSaving}>
             Cancel
           </button>
 

@@ -22,7 +22,6 @@ const CreatePropertyListTypeForm = ({ isSaving, onClose, onSave }) => {
         const res = await getAllPropertyTypes(true);
         setPropertyTypes(res.data || []);
       } catch (error) {
-        console.error(error);
         toast.error("Failed to load property types");
       } finally {
         setLoadingTypes(false);
