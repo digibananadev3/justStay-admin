@@ -107,10 +107,10 @@ export default function ChatWindow({ onClose }) {
           >
             {
               m.sender?._id?.toString() === user.id ? (
-                <div className="inline-block bg-gray-200  p-2 rounded">
+                <div className="inline-block bg-gray-200  p-2 rounded ms-6">
                   {m.message}
                 </div>
-              ) :    <div className="inline-block bg-[#22aaa1] text-white p-2 rounded">
+              ) :    <div className="inline-block bg-[#22aaa1] text-white p-2 me-6 rounded">
               {m.message}
             </div>
             }
