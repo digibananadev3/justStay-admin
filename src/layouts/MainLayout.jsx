@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom"
-import SideBarComponent from "../components/SideBar/SideBarComponent"
+import SideBarComponent from "../components/SideBar/SideBarComponent";
+import ChatLauncher from "../components/Chat/ChatLauncher";
 
 const MainLayout = () => {
   return(
@@ -10,6 +11,10 @@ const MainLayout = () => {
         </div>
         <div className="flex-1 overflow-y-auto">
           <Outlet />
+
+          
+          {/* Floating chat icon */}
+          <ChatLauncher />
         </div>
       </div>
     </>

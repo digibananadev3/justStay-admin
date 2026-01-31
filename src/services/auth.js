@@ -1,7 +1,8 @@
 import axios from "axios";
 
 // const AUTH_BASE_URL = "http://13.203.230.175:4000";
-const AUTH_BASE_URL = "https://qwiz15.in";
+export const AUTH_BASE_URL = "http://localhost:3000";
+// const AUTH_BASE_URL = "https://qwiz15.in";
 const AUTH_LOGIN = "/api/auth/login";
 const AUTH_VERIFY_OTP = "/api/auth/verify-otp";
 
@@ -32,6 +33,29 @@ export const handleLogin = async (phone) => {
     throw error;
   }
 };
+
+
+
+// export const handleGoogleSuccess = async (credentialResponse) => {
+//   try {
+//     const res = await axios.post(`${AUTH_BASE_URL}/api/auth/google`, {
+//       token: credentialResponse.credential,
+//       role: "hotelier" // or customer
+//     });
+
+//     dispatch(login({
+//       id: res.data.user.id,
+//       role: res.data.user.role
+//     }));
+
+//     localStorage.setItem("token", res.data.token);
+//     navigate("/");
+//   } catch (err) {
+//     console.error("Google login failed", err);
+//     setError("Google login failed");
+//   }
+// };
+
 
 export const handleVerifyOtp = async (phone, otp) => {
   const fullUrl = AUTH_BASE_URL + AUTH_VERIFY_OTP;

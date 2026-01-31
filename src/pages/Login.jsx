@@ -3,6 +3,11 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../redux/slices/authSlice';
 import { handleLogin, handleVerifyOtp } from '../services/auth';
+import { GoogleLogin } from "@react-oauth/google";
+import axios from 'axios';
+import { AUTH_BASE_URL } from '../services/auth';
+
+
 
 const Login = () => {
   const [step, setStep] = useState(1); // 1: Phone, 2: OTP
@@ -84,6 +89,13 @@ const Login = () => {
       if (response?.data?.status === 'success' && response?.data?.user) {
         // console.log('✅ [LOGIN] OTP verified successfully');
         // console.log('✅ [LOGIN] User data:', response.data.user);
+
+      // ✅ Save user to localStorage for chat
+      localStorage.setItem('user', JSON.stringify(response?.data?.user));
+
+      // ✅ Save token if your backend sends one
+      if (response?.data?.token) localStorage.setItem('token', response.data.token);
+
         
         // Login successful - dispatch user data
         dispatch(login({ 
@@ -115,6 +127,43 @@ const Login = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('');
+    try {
+      console.log("Google credential response:", credentialResponse);
+      const res = await axios.post(`${AUTH_BASE_URL}/api/auth/google`, {
+        token: credentialResponse.credential,
+        role: "hotelier", // or "customer"
+      });
+
+      console.log("Google login response:", res.data);
+
+          // Save user in localStorage
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+
+     // Save token in localStorage
+    localStorage.setItem("token", res.data.token);
+
+      // Dispatch to Redux
+      dispatch(login({
+        id: res.data.user.id,
+        role: res.data.user.role,
+      }));
+
+      // console.log("This is the value of the response from google login:", res);
+
+      // Save token in localStorage
+      // localStorage.setItem("token", res.data.token);
+
+      // Navigate to home/dashboard
+      navigate('/');
+    } catch (err) {
+      console.error("Google login failed", err);
+      setError("Google login failed");
+    }
+  };
+
+
   const handleBackToPhone = () => {
     setStep(1);
     setOtp('');
@@ -134,6 +183,21 @@ const Login = () => {
               {step === 1 ? 'Sign in to your account' : 'Enter OTP to continue'}
             </p>
           </div>
+
+
+                    <div className="mb-6">
+  <GoogleLogin
+    onSuccess={handleGoogleSuccess}
+    onError={() => setError("Google Sign-in failed")}
+    width="100%"
+  />
+</div>
+
+<div className="flex items-center my-4">
+  <div className="grow h-px bg-gray-300"></div>
+  <span className="px-3 text-sm text-gray-500">OR</span>
+  <div className="grow h-px bg-gray-300"></div>
+</div>
 
           {/* Step 1: Phone Number */}
           {step === 1 && (
@@ -264,6 +328,11 @@ const Login = () => {
               </div>
             </form>
           )}
+
+
+
+
+
 
           {/* Footer */}
           <div className="mt-6 text-center text-sm text-gray-600">
