@@ -130,13 +130,13 @@ const Login = () => {
   const handleGoogleSuccess = async (credentialResponse) => {
     setError('');
     try {
-      console.log("Google credential response:", credentialResponse);
+      // console.log("Google credential response:", credentialResponse);
       const res = await axios.post(`${AUTH_BASE_URL}/api/auth/google`, {
         token: credentialResponse.credential,
         role: "hotelier", // or "customer"
       });
 
-      console.log("Google login response:", res.data);
+      // console.log("Google login response:", res.data);
 
           // Save user in localStorage
     localStorage.setItem("user", JSON.stringify(res.data.user));

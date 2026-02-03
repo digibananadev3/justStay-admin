@@ -5,6 +5,7 @@ export const AUTH_BASE_URL = "http://localhost:3000";
 // const AUTH_BASE_URL = "https://qwiz15.in";
 const AUTH_LOGIN = "/api/auth/login";
 const AUTH_VERIFY_OTP = "/api/auth/verify-otp";
+// export const GOOGLE_CLIENT_ID = "345269802863-m618p00terjv25v2omqqhethfj8on7mm.apps.googleusercontent.com";
 
 // Create a separate axios instance for auth endpoints
 const authApiClient = axios.create({

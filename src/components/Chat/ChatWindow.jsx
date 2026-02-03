@@ -89,7 +89,7 @@ export default function ChatWindow({ onClose }) {
       {console.log("Render ChatWindow with sessionId:", sessionId)}
       <div className="flex justify-between items-center p-3 bg-[#22aaa1] text-white rounded-t-lg">
         <span>Support Chat</span>
-        <button onClick={onClose}>
+        <button onClick={onClose} className="cursor-pointer">
           <FaTimes size={18} />
         </button>
       </div>
