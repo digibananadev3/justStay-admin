@@ -9,6 +9,8 @@ import { FaUserCheck } from "react-icons/fa6";
 import { FiFileText } from "react-icons/fi";
 import { FaRegChartBar } from "react-icons/fa";
 import { MdAdminPanelSettings, MdOutlineChatBubble } from "react-icons/md";
+import { IoFastFoodOutline } from "react-icons/io5";
+
 import { BsCalendar4 } from "react-icons/bs";
 import { RiUserSettingsLine } from "react-icons/ri";
 
@@ -74,6 +76,11 @@ export const NavBarConfig = [
   //     },
   //   ],
   // },
+  {
+    title: "Food Management",
+    icon: IoFastFoodOutline ,
+    url: "/food-management",
+  },
   {
     title: "Verification",
     icon: FaUserCheck,

@@ -19,6 +19,7 @@ import MasterManagementLayout from "../layouts/MasterManagementLayout";
 import AmenitiesManagementLayout from "../layouts/AmenitiesManagementLayout";
 import PropertyManagementLayout from "../layouts/PropertyManagementLayout";
 import PropertyListTypeManagementLayout from "../layouts/PropertyListTypeManagementLayout";
+import FoodManagementLayout from "../layouts/FoodManagementLayout";
 
 
 const BASE_PATH = "/admin";  
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
       {
         path: "master-management/amenities",
         element: <AmenitiesManagementLayout />
+      },
+      {
+        path: "food-management",
+        element: <FoodManagementLayout />
       },
       {
         path: "verification",
